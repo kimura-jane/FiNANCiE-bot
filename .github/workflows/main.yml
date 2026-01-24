@@ -1,11 +1,9 @@
 name: FiNANCiE Owner Ranking Daily Update
 
 on:
-  # 毎日JST 0:00 (UTC 15:00) に実行
   schedule:
     - cron: '0 15 * * *'
   
-  # 手動実行も可能
   workflow_dispatch:
 
 env:
