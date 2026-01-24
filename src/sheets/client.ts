@@ -15,7 +15,22 @@ export class SheetsClient {
   private initialized = false;
 
   constructor() {
-    const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON || '{}');
+    const jsonStr = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || '{}';
+    const sheetId = process.env.GOOGLE_SHEET_ID || '';
+    
+    // デバッグ: 環境変数の確認
+    logger.info(`Sheet ID: ${sheetId}`);
+    logger.info(`JSON length: ${jsonStr.length}`);
+    logger.info(`JSON starts with: ${jsonStr.substring(0, 50)}`);
+    
+    let credentials;
+    try {
+      credentials = JSON.parse(jsonStr);
+      logger.info(`Parsed client_email: ${credentials.client_email}`);
+    } catch (e) {
+      logger.error(`JSON parse error: ${e}`);
+      throw new Error('Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON');
+    }
     
     const auth = new JWT({
       email: credentials.client_email,
@@ -23,12 +38,13 @@ export class SheetsClient {
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
-    this.doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID || '', auth);
+    this.doc = new GoogleSpreadsheet(sheetId, auth);
   }
 
   async init(): Promise<void> {
     if (this.initialized) return;
     
+    logger.info('Attempting to load spreadsheet...');
     await this.doc.loadInfo();
     this.initialized = true;
     logger.info(`Connected to spreadsheet: ${this.doc.title}`);
