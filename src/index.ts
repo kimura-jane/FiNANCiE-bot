@@ -60,6 +60,7 @@ async function main(): Promise<void> {
     if (owners.length === 0) {
       throw new Error('No owners found in spreadsheet');
     }
+    logger.info(`Found ${owners.length} owners to process`);
 
     // 2. 昨日のデータを取得
     const yesterdayMetrics = await sheets.getYesterdayMetrics();
@@ -73,8 +74,9 @@ async function main(): Promise<void> {
     const todayDate = sheets.getTodayDate();
     const todayMetrics: DailyMetrics[] = [];
 
-    for (const owner of owners) {
-      logger.info(`Processing: ${owner.name}`);
+    for (let i = 0; i < owners.length; i++) {
+      const owner = owners[i];
+      logger.info(`[${i + 1}/${owners.length}] Processing: ${owner.name}`);
       
       // 前日データ（フォールバック用）
       const yesterday = yesterdayMetrics.get(owner.name);
@@ -84,12 +86,17 @@ async function main(): Promise<void> {
       if (owner.financieUrl) {
         const result = await scrapeFinancie(page, owner.financieUrl);
         if (result.success && result.data) {
-          financieData = result.data;
+          // 取得成功時のみ更新（0の場合は前日データを優先）
+          financieData = {
+            supporters: result.data.supporters > 0 ? result.data.supporters : (yesterday?.financie.supporters || 0),
+            totalPosts: result.data.totalPosts > 0 ? result.data.totalPosts : (yesterday?.financie.totalPosts || 0),
+          };
         } else if (yesterday) {
-          // 失敗時は前日データを継承
           financieData = yesterday.financie;
           logger.warn(`Using yesterday's FiNANCiE data for ${owner.name}`);
         }
+      } else if (yesterday) {
+        financieData = yesterday.financie;
       }
 
       // 待機
@@ -100,12 +107,17 @@ async function main(): Promise<void> {
       if (owner.xId) {
         const result = await scrapeX(page, owner.xId);
         if (result.success && result.data) {
-          xData = result.data;
+          // 取得成功時のみ更新（0の場合は前日データを優先）
+          xData = {
+            followers: result.data.followers > 0 ? result.data.followers : (yesterday?.x.followers || 0),
+            totalPosts: result.data.totalPosts > 0 ? result.data.totalPosts : (yesterday?.x.totalPosts || 0),
+          };
         } else if (yesterday) {
-          // 失敗時は前日データを継承
           xData = yesterday.x;
           logger.warn(`Using yesterday's X data for ${owner.name}`);
         }
+      } else if (yesterday) {
+        xData = yesterday.x;
       }
 
       todayMetrics.push({
@@ -114,6 +126,8 @@ async function main(): Promise<void> {
         financie: financieData,
         x: xData,
       });
+
+      logger.info(`${owner.name}: FiNANCiE(supporters=${financieData.supporters}, posts=${financieData.totalPosts}), X(followers=${xData.followers}, posts=${xData.totalPosts})`);
 
       // 次のオーナーの前に待機
       await randomDelay(5, 10);
@@ -135,7 +149,7 @@ async function main(): Promise<void> {
     logger.info('=== Results Summary ===');
     const sorted = [...scoredMetrics].sort((a, b) => b.score - a.score);
     sorted.slice(0, 5).forEach((m, i) => {
-      logger.info(`${i + 1}. ${m.name}: ${m.score} points`);
+      logger.info(`${i + 1}. ${m.name}: ${m.score} points (ΔF:${m.delta.financiePosts}, ΔX:${m.delta.xPosts}, ΔM:${m.delta.supporters})`);
     });
 
     logger.info('=== Process Completed Successfully ===');
