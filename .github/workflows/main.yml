@@ -1,0 +1,53 @@
+name: FiNANCiE Owner Ranking Daily Update
+
+on:
+  # 毎日JST 0:00 (UTC 15:00) に実行
+  schedule:
+    - cron: '0 15 * * *'
+  
+  # 手動実行も可能
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  update-ranking:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Run scraper
+        env:
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          DEBUG: 'false'
+        run: npm start
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-logs
+          path: |
+            *.log
+            dist/
+          retention-days: 7
