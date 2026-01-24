@@ -12,7 +12,6 @@ const parseNumber = (text: string | null): number => {
   
   const cleaned = text.trim().toLowerCase();
   
-  // K（千）、M（百万）表記の処理
   if (cleaned.includes('k')) {
     const num = parseFloat(cleaned.replace(/[^0-9.]/g, ''));
     return Math.round(num * 1000);
@@ -22,7 +21,6 @@ const parseNumber = (text: string | null): number => {
     return Math.round(num * 1000000);
   }
   
-  // 通常の数値
   return parseInt(cleaned.replace(/[^0-9]/g, ''), 10) || 0;
 };
 
@@ -30,11 +28,9 @@ const parseNumber = (text: string | null): number => {
  * XプロフィールURLを正規化
  */
 const normalizeXUrl = (idOrUrl: string): string => {
-  // すでにURLの場合はそのまま返す
   if (idOrUrl.startsWith('http')) {
     return idOrUrl;
   }
-  // @を除去してURLを構築
   const username = idOrUrl.replace(/^@/, '');
   return `https://x.com/${username}`;
 };
@@ -51,67 +47,80 @@ export const scrapeX = async (
   try {
     logger.info(`Scraping X: ${url}`);
     
-    // X.comはリダイレクトが多いのでdomcontentloadedで待つ
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    // ページ遷移（エラーハンドリング強化）
+    const response = await page.goto(url, { 
+      waitUntil: 'domcontentloaded',
+      timeout: 30000 
+    });
+    
+    // HTTPステータスをチェック
+    if (response) {
+      const status = response.status();
+      logger.info(`X response status: ${status}`);
+      
+      if (status === 403) {
+        logger.error('X returned 403 Forbidden - IP is blocked');
+        return { success: false, error: '403 Forbidden - IP blocked by X' };
+      }
+      if (status === 429) {
+        logger.error('X returned 429 Too Many Requests - Rate limited');
+        return { success: false, error: '429 Rate limited' };
+      }
+      if (status >= 400) {
+        logger.error(`X returned error status: ${status}`);
+        return { success: false, error: `HTTP ${status}` };
+      }
+    }
     
     // ページ読み込み待機
-    await page.waitForSelector(X_SELECTORS.PAGE_LOADED, { timeout: 20000 })
-      .catch(() => logger.warn('X page load selector not found, continuing...'));
-    
-    // 追加の待機（動的コンテンツ対策）
     await randomDelay(3, 6);
     
-    // ログイン要求モーダルの確認
-    const loginModal = await page.$(X_SELECTORS.LOGIN_MODAL);
-    if (loginModal) {
-      logger.warn('Login modal detected, data may be limited');
+    // ログインモーダルやエラー画面のチェック
+    const pageContent = await page.content();
+    if (pageContent.includes('Something went wrong') || 
+        pageContent.includes('この情報は利用できません') ||
+        pageContent.includes('Try again')) {
+      logger.warn('X page shows error message');
+      return { success: false, error: 'X page error' };
     }
     
     // フォロワー数を取得
     let followers = 0;
     try {
-      // href属性で探す（より確実）
+      // 方法1: フォロワーリンクから取得
       const followersLink = await page.$('a[href$="/verified_followers"], a[href$="/followers"]');
       if (followersLink) {
         const text = await followersLink.textContent();
         followers = parseNumber(text);
-      } else {
-        // フォールバック: aria-label含むテキストを探す
-        const pageContent = await page.content();
-        const match = pageContent.match(/(\d[\d,.]*[KMkm]?)\s*(Followers|フォロワー)/);
-        if (match) {
-          followers = parseNumber(match[1]);
-        }
-      }
-    } catch (e) {
-      logger.warn('Failed to get followers count');
-    }
-    
-    // 総ポスト数を取得（プロフィールヘッダーから）
-    let totalPosts = 0;
-    try {
-      // ヘッダー部分のポスト数を探す
-      const headerText = await page.textContent('[data-testid="primaryColumn"] header, [data-testid="UserProfileHeader_Items"]');
-      if (headerText) {
-        const match = headerText.match(/(\d[\d,.]*[KMkm]?)\s*(posts?|ポスト)/i);
-        if (match) {
-          totalPosts = parseNumber(match[1]);
-        }
+        logger.info(`Found followers from link: ${followers}`);
       }
       
-      // フォールバック
-      if (totalPosts === 0) {
-        const pageContent = await page.content();
-        const match = pageContent.match(/(\d[\d,.]*[KMkm]?)\s*(posts?|ポスト)/i);
+      // 方法2: ページ内テキストから取得
+      if (followers === 0) {
+        const match = pageContent.match(/(\d[\d,.]*[KMkm]?)\s*(Followers|フォロワー)/i);
         if (match) {
-          totalPosts = parseNumber(match[1]);
+          followers = parseNumber(match[1]);
+          logger.info(`Found followers from text: ${followers}`);
         }
       }
     } catch (e) {
-      logger.warn('Failed to get total posts count');
+      logger.warn(`Failed to get followers: ${e}`);
     }
     
-    logger.info(`X result: followers=${followers}, posts=${totalPosts}`);
+    // 総ポスト数を取得
+    let totalPosts = 0;
+    try {
+      // ヘッダーまたはナビゲーション部分から取得
+      const match = pageContent.match(/(\d[\d,.]*[KMkm]?)\s*(posts?|ポスト)/i);
+      if (match) {
+        totalPosts = parseNumber(match[1]);
+        logger.info(`Found posts: ${totalPosts}`);
+      }
+    } catch (e) {
+      logger.warn(`Failed to get posts: ${e}`);
+    }
+    
+    logger.info(`X final result: followers=${followers}, posts=${totalPosts}`);
     
     return {
       success: true,
