@@ -1,4 +1,4 @@
-import { Page, Response } from 'playwright';
+import { Page } from 'playwright';
 import { FinancieMetrics, ScrapeResult } from '../types';
 import { logger } from '../utils/logger';
 import { randomDelay } from '../utils/delay';
@@ -13,8 +13,34 @@ const parseNumber = (text: string | null): number => {
 };
 
 /**
+ * 相対時間テキストから24時間以内かどうか判定
+ */
+const isWithin24Hours = (timeText: string): boolean => {
+  if (!timeText) return false;
+  
+  const text = timeText.trim();
+  
+  // 「分前」「時間前」→ 24時間以内
+  if (text.includes('分前') || text.includes('時間前')) {
+    return true;
+  }
+  
+  // 「1日前」→ 24時間以内の可能性があるのでActive扱い
+  if (text === '1日前' || text.includes('1日前')) {
+    return true;
+  }
+  
+  // 「秒前」「たった今」→ 24時間以内
+  if (text.includes('秒前') || text.includes('たった今') || text.includes('今')) {
+    return true;
+  }
+  
+  // 「2日前」以降、または日付形式 → 24時間外
+  return false;
+};
+
+/**
  * FiNANCiEプロフィールページからメトリクスを取得
- * APIインターセプトで投稿数を取得
  */
 export const scrapeFinancie = async (
   page: Page,
@@ -37,7 +63,7 @@ export const scrapeFinancie = async (
         logger.info(`Found supporters: ${supporters}`);
       }
       
-      // フォールバック: ページ内テキストから検索
+      // フォールバック
       if (supporters === 0) {
         const pageContent = await page.content();
         const match = pageContent.match(/(\d[\d,]*)\s*(メンバー|人|サポーター)/);
@@ -52,19 +78,13 @@ export const scrapeFinancie = async (
 
     // ========== Step 2: 活動報告リンクを取得 ==========
     let activityLogUrl = '';
-    let communityId = '';
     try {
       const newsLink = await page.$('a[data-tab-name="news"]');
       if (newsLink) {
         const href = await newsLink.getAttribute('href');
         if (href) {
           activityLogUrl = href.startsWith('http') ? href : `https://financie.jp${href}`;
-          // community IDを抽出 (例: /communities/443/activity_log -> 443)
-          const idMatch = href.match(/\/communities\/(\d+)/);
-          if (idMatch) {
-            communityId = idMatch[1];
-          }
-          logger.info(`Found activity log URL: ${activityLogUrl}, community ID: ${communityId}`);
+          logger.info(`Found activity log URL: ${activityLogUrl}`);
         }
       }
       
@@ -75,10 +95,6 @@ export const scrapeFinancie = async (
           const href = await altLink.getAttribute('href');
           if (href) {
             activityLogUrl = href.startsWith('http') ? href : `https://financie.jp${href}`;
-            const idMatch = href.match(/\/communities\/(\d+)/);
-            if (idMatch) {
-              communityId = idMatch[1];
-            }
           }
         }
       }
@@ -86,75 +102,82 @@ export const scrapeFinancie = async (
       logger.warn('Failed to get activity log link');
     }
 
-    // ========== Step 3: APIインターセプトで投稿数を取得 ==========
-    let totalPosts = 0;
-    if (activityLogUrl && communityId) {
+    // ========== Step 3: 活動報告ページで最新投稿時間を取得 ==========
+    let lastPostTime = '不明';
+    let isActive = false;
+    
+    if (activityLogUrl) {
       await randomDelay(5, 8);
       
       try {
-        // APIレスポンスをキャッチするPromiseを設定
-        const apiResponsePromise = page.waitForResponse(
-          (response: Response) => {
-            const url = response.url();
-            return url.includes(`/api/v1/communities/${communityId}/activity_logs`) ||
-                   url.includes(`/api/`) && url.includes('activity');
-          },
-          { timeout: 15000 }
-        ).catch(() => null);
+        await page.goto(activityLogUrl, { waitUntil: 'networkidle' });
+        await randomDelay(2, 4);
         
-        // ページに遷移
-        await page.goto(activityLogUrl, { waitUntil: 'domcontentloaded' });
+        // 最新投稿の時間テキストを取得（複数のセレクターを試す）
+        const timeSelectors = [
+          '.feed-item time',
+          '.activity-item time',
+          '[class*="feed"] time',
+          '[class*="activity"] time',
+          '[class*="post"] time',
+          'time',
+          '[class*="time"]',
+          '[class*="date"]',
+        ];
         
-        // APIレスポンスを待つ
-        const apiResponse = await apiResponsePromise;
-        
-        if (apiResponse) {
+        for (const selector of timeSelectors) {
           try {
-            const jsonData = await apiResponse.json();
-            logger.info(`API response received`);
-            
-            // total_count を探す（様々なパターンに対応）
-            if (jsonData.total_count !== undefined) {
-              totalPosts = jsonData.total_count;
-            } else if (jsonData.data?.total_count !== undefined) {
-              totalPosts = jsonData.data.total_count;
-            } else if (jsonData.meta?.total_count !== undefined) {
-              totalPosts = jsonData.meta.total_count;
-            } else if (jsonData.total !== undefined) {
-              totalPosts = jsonData.total;
-            } else if (Array.isArray(jsonData.data)) {
-              // 配列の場合はlengthを使用（ただし1ページ分のみ）
-              totalPosts = jsonData.data.length;
-              logger.info(`Using array length as posts count`);
+            const timeEl = await page.$(selector);
+            if (timeEl) {
+              const text = await timeEl.textContent();
+              if (text && text.trim()) {
+                lastPostTime = text.trim();
+                logger.info(`Found time with selector "${selector}": ${lastPostTime}`);
+                break;
+              }
             }
-            
-            logger.info(`Found posts from API: ${totalPosts}`);
-          } catch (jsonError) {
-            logger.warn(`Failed to parse API JSON: ${jsonError}`);
-          }
-        } else {
-          logger.warn('API response not captured, trying fallback');
-          
-          // フォールバック: ページ上の投稿アイテムをカウント
-          await randomDelay(2, 3);
-          const postItems = await page.$$('article, [class*="activity-item"], [class*="post-item"], [class*="feed-item"]');
-          if (postItems.length > 0) {
-            totalPosts = postItems.length;
-            logger.info(`Counted visible posts: ${totalPosts}`);
+          } catch (e) {
+            // 次のセレクターを試す
           }
         }
+        
+        // フォールバック: ページ内テキストから「〇〇前」を探す
+        if (lastPostTime === '不明') {
+          const pageContent = await page.content();
+          const timePatterns = [
+            /(\d+秒前)/,
+            /(\d+分前)/,
+            /(\d+時間前)/,
+            /(\d+日前)/,
+            /(たった今)/,
+          ];
+          
+          for (const pattern of timePatterns) {
+            const match = pageContent.match(pattern);
+            if (match) {
+              lastPostTime = match[1];
+              logger.info(`Found time from text: ${lastPostTime}`);
+              break;
+            }
+          }
+        }
+        
+        // 24時間以内かどうか判定
+        isActive = isWithin24Hours(lastPostTime);
+        logger.info(`Active status: ${isActive ? '◎ Active' : '× Inactive'} (${lastPostTime})`);
+        
       } catch (e) {
         logger.warn(`Failed to scrape activity log: ${e}`);
       }
     } else {
-      logger.warn('Activity log URL not found, skipping posts count');
+      logger.warn('Activity log URL not found');
     }
     
-    logger.info(`FiNANCiE final result: supporters=${supporters}, posts=${totalPosts}`);
+    logger.info(`FiNANCiE final result: supporters=${supporters}, lastPost="${lastPostTime}", active=${isActive}`);
     
     return {
       success: true,
-      data: { supporters, totalPosts },
+      data: { supporters, lastPostTime, isActive },
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
