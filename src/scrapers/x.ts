@@ -1,126 +1,87 @@
-import { Page } from 'playwright';
-import { X_SELECTORS } from '../config/selectors';
 import { XMetrics, ScrapeResult } from '../types';
 import { logger } from '../utils/logger';
 import { randomDelay } from '../utils/delay';
 
 /**
- * 数値文字列をパース（K/M表記対応）
+ * XプロフィールからユーザーIDを抽出
  */
-const parseNumber = (text: string | null): number => {
-  if (!text) return 0;
-  
-  const cleaned = text.trim().toLowerCase();
-  
-  if (cleaned.includes('k')) {
-    const num = parseFloat(cleaned.replace(/[^0-9.]/g, ''));
-    return Math.round(num * 1000);
-  }
-  if (cleaned.includes('m')) {
-    const num = parseFloat(cleaned.replace(/[^0-9.]/g, ''));
-    return Math.round(num * 1000000);
-  }
-  
-  return parseInt(cleaned.replace(/[^0-9]/g, ''), 10) || 0;
-};
-
-/**
- * XプロフィールURLを正規化
- */
-const normalizeXUrl = (idOrUrl: string): string => {
+const extractUsername = (idOrUrl: string): string => {
+  // URLの場合は末尾のユーザー名を抽出
   if (idOrUrl.startsWith('http')) {
-    return idOrUrl;
+    const match = idOrUrl.match(/(?:twitter\.com|x\.com)\/(@?[\w]+)/);
+    if (match) {
+      return match[1].replace(/^@/, '');
+    }
   }
-  const username = idOrUrl.replace(/^@/, '');
-  return `https://x.com/${username}`;
+  // @を除去して返す
+  return idOrUrl.replace(/^@/, '');
 };
 
 /**
- * Xプロフィールページからメトリクスを取得
+ * Syndication APIを使ってXのフォロワー数・投稿数を取得
  */
 export const scrapeX = async (
-  page: Page,
+  _page: unknown, // 未使用だが互換性のため残す
   idOrUrl: string
 ): Promise<ScrapeResult<XMetrics>> => {
-  const url = normalizeXUrl(idOrUrl);
+  const username = extractUsername(idOrUrl);
+  
+  if (!username) {
+    logger.error('Invalid X username/URL');
+    return { success: false, error: 'Invalid username' };
+  }
+  
+  const apiUrl = `https://cdn.syndication.twimg.com/widgets/followbutton/info.json?screen_names=${username}`;
   
   try {
-    logger.info(`Scraping X: ${url}`);
+    logger.info(`Fetching X data for: @${username}`);
     
-    // ページ遷移（エラーハンドリング強化）
-    const response = await page.goto(url, { 
-      waitUntil: 'domcontentloaded',
-      timeout: 30000 
+    // リクエスト前に少し待機
+    await randomDelay(2, 4);
+    
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Referer': 'https://platform.twitter.com',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+      },
     });
     
     // HTTPステータスをチェック
-    if (response) {
-      const status = response.status();
-      logger.info(`X response status: ${status}`);
+    if (!response.ok) {
+      const status = response.status;
+      logger.warn(`X API returned status ${status} for @${username}`);
       
       if (status === 403) {
-        logger.error('X returned 403 Forbidden - IP is blocked');
-        return { success: false, error: '403 Forbidden - IP blocked by X' };
+        logger.error('X API returned 403 Forbidden');
+        return { success: false, error: '403 Forbidden' };
       }
       if (status === 429) {
-        logger.error('X returned 429 Too Many Requests - Rate limited');
-        return { success: false, error: '429 Rate limited' };
+        logger.error('X API rate limited (429)');
+        return { success: false, error: '429 Rate Limited' };
       }
-      if (status >= 400) {
-        logger.error(`X returned error status: ${status}`);
-        return { success: false, error: `HTTP ${status}` };
-      }
-    }
-    
-    // ページ読み込み待機
-    await randomDelay(3, 6);
-    
-    // ログインモーダルやエラー画面のチェック
-    const pageContent = await page.content();
-    if (pageContent.includes('Something went wrong') || 
-        pageContent.includes('この情報は利用できません') ||
-        pageContent.includes('Try again')) {
-      logger.warn('X page shows error message');
-      return { success: false, error: 'X page error' };
-    }
-    
-    // フォロワー数を取得
-    let followers = 0;
-    try {
-      // 方法1: フォロワーリンクから取得
-      const followersLink = await page.$('a[href$="/verified_followers"], a[href$="/followers"]');
-      if (followersLink) {
-        const text = await followersLink.textContent();
-        followers = parseNumber(text);
-        logger.info(`Found followers from link: ${followers}`);
+      if (status === 404) {
+        logger.warn(`User @${username} not found`);
+        return { success: false, error: '404 User Not Found' };
       }
       
-      // 方法2: ページ内テキストから取得
-      if (followers === 0) {
-        const match = pageContent.match(/(\d[\d,.]*[KMkm]?)\s*(Followers|フォロワー)/i);
-        if (match) {
-          followers = parseNumber(match[1]);
-          logger.info(`Found followers from text: ${followers}`);
-        }
-      }
-    } catch (e) {
-      logger.warn(`Failed to get followers: ${e}`);
+      return { success: false, error: `HTTP ${status}` };
     }
     
-    // 総ポスト数を取得
-    let totalPosts = 0;
-    try {
-      // ヘッダーまたはナビゲーション部分から取得
-      const match = pageContent.match(/(\d[\d,.]*[KMkm]?)\s*(posts?|ポスト)/i);
-      if (match) {
-        totalPosts = parseNumber(match[1]);
-        logger.info(`Found posts: ${totalPosts}`);
-      }
-    } catch (e) {
-      logger.warn(`Failed to get posts: ${e}`);
+    const data = await response.json();
+    
+    // レスポンスは配列形式
+    if (!Array.isArray(data) || data.length === 0) {
+      logger.warn(`Empty response for @${username}`);
+      return { success: false, error: 'Empty response' };
     }
     
-    logger.info(`X final result: followers=${followers}, posts=${totalPosts}`);
+    const userData = data[0];
+    
+    const followers = userData.followers_count || 0;
+    const totalPosts = userData.statuses_count || 0;
+    
+    logger.info(`X result for @${username}: followers=${followers}, posts=${totalPosts}`);
     
     return {
       success: true,
@@ -128,7 +89,7 @@ export const scrapeX = async (
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error(`X scrape failed: ${url}`, { error: errorMessage });
+    logger.error(`X fetch failed for @${username}`, { error: errorMessage });
     
     return {
       success: false,
