@@ -1,3 +1,5 @@
+// src/scrapers/financie.ts
+
 import { Page } from 'playwright';
 import { FinancieMetrics, ScrapeResult } from '../types';
 import { logger } from '../utils/logger';
@@ -103,7 +105,7 @@ export const scrapeFinancie = async (
     }
 
     // ========== Step 3: 活動報告ページで最新投稿時間を取得 ==========
-    let lastPostTime = '不明';
+    let lastPostTime: string | null = '不明';
     let isActive = false;
     
     if (activityLogUrl) {
@@ -177,7 +179,12 @@ export const scrapeFinancie = async (
     
     return {
       success: true,
-      data: { supporters, lastPostTime, isActive },
+      data: { 
+        supporters, 
+        totalPosts: 0,
+        lastPostTime, 
+        isActive 
+      },
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
