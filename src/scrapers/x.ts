@@ -1,17 +1,25 @@
 // src/scrapers/x.ts
 
-import { XScrapeResult, XSyndicationResponse } from '../types';
+import { XMetrics, ScrapeResult } from '../types';
 import { logger } from '../utils/logger';
 import { randomDelay } from '../utils/delay';
 
 /**
+ * Syndication APIのレスポンス型
+ */
+interface XSyndicationResponse {
+  id: number;
+  screen_name: string;
+  followers_count: number;
+  statuses_count: number;
+}
+
+/**
  * X IDからユーザー名を抽出
- * "@username" や "https://x.com/username" から "username" を取り出す
  */
 const extractUsername = (idOrUrl: string): string => {
   let username = idOrUrl.trim();
   
-  // URLの場合
   if (username.includes('x.com/') || username.includes('twitter.com/')) {
     const match = username.match(/(?:x\.com|twitter\.com)\/([a-zA-Z0-9_]+)/);
     if (match) {
@@ -19,19 +27,17 @@ const extractUsername = (idOrUrl: string): string => {
     }
   }
   
-  // @を除去
   username = username.replace(/^@/, '');
   
   return username;
 };
 
 /**
- * Syndication APIを使用してXデータを取得（X版A案）
- * URL: https://cdn.syndication.twimg.com/widgets/followbutton/info.json?screen_names=username
+ * Syndication APIを使用してXデータを取得
  */
 export const scrapeX = async (
   xId: string
-): Promise<XScrapeResult> => {
+): Promise<ScrapeResult<XMetrics>> => {
   const username = extractUsername(xId);
   
   if (!username) {
@@ -44,7 +50,6 @@ export const scrapeX = async (
   try {
     logger.info(`Scraping X via Syndication API: ${username}`);
     
-    // レート制限対策で待機
     await randomDelay(2, 4);
     
     const url = `https://cdn.syndication.twimg.com/widgets/followbutton/info.json?screen_names=${username}`;
@@ -78,7 +83,7 @@ export const scrapeX = async (
       return { success: false, error: `HTTP ${response.status}` };
     }
 
-    const data: XSyndicationResponse[] = await response.json();
+    const data = await response.json() as XSyndicationResponse[];
     
     if (!data || data.length === 0) {
       logger.warn(`  Empty response for ${username}`);
