@@ -1,35 +1,31 @@
-import { GoogleSpreadsheet } from 'google-spreadsheet';
+// src/sheets/client.ts
+
+import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { format } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
-import { Owner, DailyMetrics, ScoredMetrics } from '../types';
+import { Owner, DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics } from '../types';
 import { logger } from '../utils/logger';
 
-const TIMEZONE = 'Asia/Tokyo';
-
-/**
- * Google Sheets クライアント
- */
 export class SheetsClient {
   private doc: GoogleSpreadsheet;
   private initialized = false;
 
   constructor() {
-    const jsonStr = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || '{}';
-    const sheetId = process.env.GOOGLE_SHEET_ID || '';
-    
-    logger.info(`Sheet ID: ${sheetId}`);
-    logger.info(`JSON length: ${jsonStr.length}`);
-    
-    let credentials;
-    try {
-      credentials = JSON.parse(jsonStr);
-      logger.info(`Parsed client_email: ${credentials.client_email}`);
-    } catch (e) {
-      logger.error(`JSON parse error: ${e}`);
-      throw new Error('Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON');
+    const sheetId = process.env.GOOGLE_SHEET_ID;
+    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+
+    if (!sheetId) {
+      throw new Error('GOOGLE_SHEET_ID is not set');
     }
-    
+    if (!serviceAccountJson) {
+      throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is not set');
+    }
+
+    logger.info(`Sheet ID: ${sheetId.substring(0, 10)}...`);
+    logger.info(`JSON length: ${serviceAccountJson.length}`);
+
+    const credentials = JSON.parse(serviceAccountJson);
+    logger.info(`Client email: ${credentials.client_email}`);
+
     const auth = new JWT({
       email: credentials.client_email,
       key: credentials.private_key,
@@ -39,19 +35,19 @@ export class SheetsClient {
     this.doc = new GoogleSpreadsheet(sheetId, auth);
   }
 
-  async init(): Promise<void> {
+  private async init(): Promise<void> {
     if (this.initialized) return;
     
     logger.info('Attempting to load spreadsheet...');
     await this.doc.loadInfo();
+    logger.info(`Spreadsheet loaded: ${this.doc.title}`);
     this.initialized = true;
-    logger.info(`Connected to spreadsheet: ${this.doc.title}`);
   }
 
   getTodayDate(): string {
     const now = new Date();
-    const jstDate = toZonedTime(now, TIMEZONE);
-    return format(jstDate, 'yyyy-MM-dd');
+    const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    return jst.toISOString().split('T')[0];
   }
 
   async getOwners(): Promise<Owner[]> {
@@ -70,12 +66,15 @@ export class SheetsClient {
       const financieUrl = row.get('FiNANCiE URL') || row.get('financie_url') || '';
       const xId = row.get('X ID') || row.get('x_id') || '';
 
-      if (name && (financieUrl || xId)) {
-        owners.push({ name, financieUrl, xId });
+      if (name) {
+        owners.push({
+          name,
+          financieUrl: financieUrl || null,
+          xId: xId || null,
+        });
       }
     }
 
-    logger.info(`Loaded ${owners.length} owners from sheet`);
     return owners;
   }
 
@@ -84,39 +83,44 @@ export class SheetsClient {
     
     const sheet = this.doc.sheetsByTitle['History'];
     if (!sheet) {
-      logger.warn('History sheet not found, returning empty data');
+      logger.warn('History sheet not found, returning empty map');
       return new Map();
     }
 
     const rows = await sheet.getRows();
     const metricsMap = new Map<string, DailyMetrics>();
-    const today = this.getTodayDate();
     
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
     for (const row of rows) {
-      const date = row.get('date') || '';
-      const name = row.get('name') || '';
-      
-      if (date && date !== today && name) {
-        const existing = metricsMap.get(name);
-        if (!existing || existing.date < date) {
-          metricsMap.set(name, {
-            date,
-            name,
-            financie: {
-              supporters: parseInt(row.get('financie_supporters') || '0', 10),
-              lastPostTime: row.get('last_post_time') || '不明',
-              isActive: row.get('is_active') === '◎',
-            },
-            x: {
-              followers: parseInt(row.get('x_followers') || '0', 10),
-              totalPosts: parseInt(row.get('x_posts') || '0', 10),
-            },
-          });
-        }
-      }
+      const date = row.get('date') || row.get('日付') || '';
+      if (!date.startsWith(yesterdayStr)) continue;
+
+      const name = row.get('name') || row.get('名前') || '';
+      if (!name) continue;
+
+      const financie: FinancieMetrics = {
+        supporters: parseInt(row.get('financie_supporters') || row.get('サポーター数') || '0', 10) || 0,
+        totalPosts: parseInt(row.get('financie_posts') || row.get('FiNANCiE投稿数') || '0', 10) || 0,
+        isActive: (row.get('is_active') || row.get('アクティブ') || '') === '◎',
+        lastPostTime: row.get('last_post_time') || row.get('最終投稿') || null,
+      };
+
+      const x: XMetrics = {
+        followers: parseInt(row.get('x_followers') || row.get('フォロワー数') || '0', 10) || 0,
+        totalPosts: parseInt(row.get('x_posts') || row.get('X投稿数') || '0', 10) || 0,
+      };
+
+      metricsMap.set(name, {
+        date,
+        name,
+        financie,
+        x,
+      });
     }
 
-    logger.info(`Loaded yesterday metrics for ${metricsMap.size} owners`);
     return metricsMap;
   }
 
@@ -128,28 +132,29 @@ export class SheetsClient {
       sheet = await this.doc.addSheet({
         title: 'History',
         headerValues: [
-          'date', 'name',
-          'financie_supporters', 'last_post_time', 'is_active',
-          'x_followers', 'x_posts'
+          'date', 'name', 'financie_supporters', 'financie_posts',
+          'last_post_time', 'is_active', 'x_followers', 'x_posts'
         ],
       });
+      logger.info('Created History sheet');
     }
 
     const rows = metrics.map(m => ({
       date: m.date,
       name: m.name,
       financie_supporters: m.financie.supporters,
-      last_post_time: m.financie.lastPostTime,
+      financie_posts: m.financie.totalPosts,
+      last_post_time: m.financie.lastPostTime || '',
       is_active: m.financie.isActive ? '◎' : '×',
       x_followers: m.x.followers,
       x_posts: m.x.totalPosts,
     }));
 
     await sheet.addRows(rows);
-    logger.info(`Appended ${rows.length} rows to History sheet`);
+    logger.info(`Appended ${rows.length} rows to History`);
   }
 
-  async updateRanking(scoredMetrics: ScoredMetrics[]): Promise<void> {
+  async updateRanking(metrics: ScoredMetrics[]): Promise<void> {
     await this.init();
     
     let sheet = this.doc.sheetsByTitle['Ranking'];
@@ -157,25 +162,28 @@ export class SheetsClient {
       sheet = await this.doc.addSheet({
         title: 'Ranking',
         headerValues: [
-          'rank', 'name', 'score',
-          'active', 'last_post_time',
-          'supporters', 'delta_supporters',
-          'x_followers', 'delta_followers',
-          'date'
+          'rank', 'name', 'score', 'active', 'last_post_time',
+          'supporters', 'delta_supporters', 'x_followers', 'delta_followers', 'date'
         ],
       });
+      logger.info('Created Ranking sheet');
     }
 
-    await sheet.clearRows();
+    // 既存データをクリア
+    const existingRows = await sheet.getRows();
+    for (const row of existingRows) {
+      await row.delete();
+    }
 
-    const sorted = [...scoredMetrics].sort((a, b) => b.score - a.score);
+    // スコア順でソート
+    const sorted = [...metrics].sort((a, b) => b.score - a.score);
 
-    const rows = sorted.map((m, index) => ({
-      rank: index + 1,
+    const rows = sorted.map((m, i) => ({
+      rank: i + 1,
       name: m.name,
       score: m.score,
       active: m.financie.isActive ? '◎' : '×',
-      last_post_time: m.financie.lastPostTime,
+      last_post_time: m.financie.lastPostTime || '',
       supporters: m.financie.supporters,
       delta_supporters: m.delta.supporters,
       x_followers: m.x.followers,
@@ -184,6 +192,6 @@ export class SheetsClient {
     }));
 
     await sheet.addRows(rows);
-    logger.info(`Updated Ranking sheet with ${rows.length} rows`);
+    logger.info(`Updated Ranking with ${rows.length} rows`);
   }
 }
