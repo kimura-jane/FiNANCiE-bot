@@ -50,7 +50,8 @@ export const scrapeX = async (
   try {
     logger.info(`Scraping X via Syndication API: ${username}`);
     
-    await randomDelay(2, 4);
+    // レート制限対策で長めに待機（5〜10秒）
+    await randomDelay(5, 10);
     
     const url = `https://cdn.syndication.twimg.com/widgets/followbutton/info.json?screen_names=${username}`;
     
@@ -83,15 +84,31 @@ export const scrapeX = async (
       return { success: false, error: `HTTP ${response.status}` };
     }
 
-    const data = await response.json() as XSyndicationResponse[];
+    // レスポンスのテキストを取得して確認
+    const text = await response.text();
+    logger.info(`  Response length: ${text.length} chars`);
     
-    if (!data || data.length === 0) {
+    if (!text || text.length === 0) {
       logger.warn(`  Empty response for ${username}`);
       return { success: false, error: 'Empty response' };
     }
 
+    // JSONパース
+    let data: XSyndicationResponse[];
+    try {
+      data = JSON.parse(text);
+    } catch (parseError) {
+      logger.warn(`  JSON parse failed: ${text.substring(0, 100)}`);
+      return { success: false, error: 'JSON parse failed' };
+    }
+    
+    if (!data || data.length === 0) {
+      logger.warn(`  Empty array for ${username}`);
+      return { success: false, error: 'Empty array' };
+    }
+
     const userData = data[0];
-    logger.info(`  Followers: ${userData.followers_count}, Posts: ${userData.statuses_count}`);
+    logger.info(`  Success: Followers=${userData.followers_count}, Posts=${userData.statuses_count}`);
 
     return {
       success: true,
@@ -102,7 +119,7 @@ export const scrapeX = async (
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`X Syndication API failed: ${message}`);
+    logger.error(`X Syndication API failed for ${username}: ${message}`);
     return {
       success: false,
       error: message,
