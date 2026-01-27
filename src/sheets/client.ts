@@ -20,11 +20,7 @@ export class SheetsClient {
       throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is not set');
     }
 
-    logger.info(`Sheet ID: ${sheetId.substring(0, 10)}...`);
-    logger.info(`JSON length: ${serviceAccountJson.length}`);
-
     const credentials = JSON.parse(serviceAccountJson);
-    logger.info(`Client email: ${credentials.client_email}`);
 
     const auth = new JWT({
       email: credentials.client_email,
@@ -38,7 +34,7 @@ export class SheetsClient {
   private async init(): Promise<void> {
     if (this.initialized) return;
     
-    logger.info('Attempting to load spreadsheet...');
+    logger.info('Loading spreadsheet...');
     await this.doc.loadInfo();
     logger.info(`Spreadsheet loaded: ${this.doc.title}`);
     this.initialized = true;
@@ -83,7 +79,7 @@ export class SheetsClient {
     
     const sheet = this.doc.sheetsByTitle['History'];
     if (!sheet) {
-      logger.warn('History sheet not found, returning empty map');
+      logger.warn('History sheet not found');
       return new Map();
     }
 
@@ -95,22 +91,21 @@ export class SheetsClient {
     const yesterdayStr = yesterday.toISOString().split('T')[0];
 
     for (const row of rows) {
-      const date = row.get('date') || row.get('日付') || '';
+      const date = row.get('date') || '';
       if (!date.startsWith(yesterdayStr)) continue;
 
-      const name = row.get('name') || row.get('名前') || '';
+      const name = row.get('name') || '';
       if (!name) continue;
 
       const financie: FinancieMetrics = {
-        supporters: parseInt(row.get('financie_supporters') || row.get('サポーター数') || '0', 10) || 0,
-        totalPosts: parseInt(row.get('financie_posts') || row.get('FiNANCiE投稿数') || '0', 10) || 0,
-        isActive: (row.get('is_active') || row.get('アクティブ') || '') === '◎',
-        lastPostTime: row.get('last_post_time') || row.get('最終投稿') || null,
+        supporters: parseInt(row.get('supporters') || '0', 10) || 0,
+        weeklyPosts: parseInt(row.get('weekly_posts') || '0', 10) || 0,
+        lastPostTime: row.get('last_post') || null,
       };
 
       const x: XMetrics = {
-        followers: parseInt(row.get('x_followers') || row.get('フォロワー数') || '0', 10) || 0,
-        totalPosts: parseInt(row.get('x_posts') || row.get('X投稿数') || '0', 10) || 0,
+        followers: parseInt(row.get('x_followers') || '0', 10) || 0,
+        totalPosts: parseInt(row.get('x_posts') || '0', 10) || 0,
       };
 
       metricsMap.set(name, {
@@ -132,8 +127,8 @@ export class SheetsClient {
       sheet = await this.doc.addSheet({
         title: 'History',
         headerValues: [
-          'date', 'name', 'financie_supporters', 'financie_posts',
-          'last_post_time', 'is_active', 'x_followers', 'x_posts'
+          'date', 'name', 'supporters', 'weekly_posts', 'last_post',
+          'x_followers', 'x_posts'
         ],
       });
       logger.info('Created History sheet');
@@ -142,10 +137,9 @@ export class SheetsClient {
     const rows = metrics.map(m => ({
       date: m.date,
       name: m.name,
-      financie_supporters: m.financie.supporters,
-      financie_posts: m.financie.totalPosts,
-      last_post_time: m.financie.lastPostTime || '',
-      is_active: m.financie.isActive ? '◎' : '×',
+      supporters: m.financie.supporters,
+      weekly_posts: m.financie.weeklyPosts,
+      last_post: m.financie.lastPostTime || '',
       x_followers: m.x.followers,
       x_posts: m.x.totalPosts,
     }));
@@ -162,32 +156,29 @@ export class SheetsClient {
       sheet = await this.doc.addSheet({
         title: 'Ranking',
         headerValues: [
-          'rank', 'name', 'score', 'active', 'last_post_time',
-          'supporters', 'delta_supporters', 'x_followers', 'delta_followers', 'date'
+          'rank', 'name', 'score', 'supporters', 'weekly_posts', 'last_post',
+          'x_followers', 'x_posts', 'date'
         ],
       });
       logger.info('Created Ranking sheet');
     }
 
-    // 既存データをクリア
     const existingRows = await sheet.getRows();
     for (const row of existingRows) {
       await row.delete();
     }
 
-    // スコア順でソート
     const sorted = [...metrics].sort((a, b) => b.score - a.score);
 
     const rows = sorted.map((m, i) => ({
       rank: i + 1,
       name: m.name,
       score: m.score,
-      active: m.financie.isActive ? '◎' : '×',
-      last_post_time: m.financie.lastPostTime || '',
       supporters: m.financie.supporters,
-      delta_supporters: m.delta.supporters,
+      weekly_posts: m.financie.weeklyPosts,
+      last_post: m.financie.lastPostTime || '',
       x_followers: m.x.followers,
-      delta_followers: m.delta.followers,
+      x_posts: m.x.totalPosts,
       date: m.date,
     }));
 
