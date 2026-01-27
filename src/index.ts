@@ -5,7 +5,7 @@ import { scrapeFinancie } from './scrapers/financie';
 import { SheetsClient } from './sheets/client';
 import { randomDelay } from './utils/delay';
 import { logger } from './utils/logger';
-import { DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics, Owner } from './types';
+import { DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics, Owner, XDailyAverage } from './types';
 
 const calculateScore = (
   current: DailyMetrics,
@@ -26,6 +26,43 @@ const calculateScore = (
       weeklyPosts: current.financie.weeklyPosts,
     },
     score: Math.round(score * 100) / 100,
+  };
+};
+
+// X一日平均を計算
+const calculateXDailyAverage = (
+  xHistory: Array<{ date: string; followers: number; posts: number; updatedAt: string }>
+): XDailyAverage | null => {
+  if (xHistory.length < 2) {
+    // データが2件未満なら計算不可
+    if (xHistory.length === 1) {
+      return {
+        avgFollowersPerDay: 0,
+        avgPostsPerDay: 0,
+        totalDays: 0,
+        latestFollowers: xHistory[0].followers,
+        latestPosts: xHistory[0].posts,
+      };
+    }
+    return null;
+  }
+
+  const first = xHistory[0];
+  const last = xHistory[xHistory.length - 1];
+  
+  const firstDate = new Date(first.updatedAt);
+  const lastDate = new Date(last.updatedAt);
+  const daysDiff = Math.max(1, Math.floor((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)));
+
+  const followersDiff = last.followers - first.followers;
+  const postsDiff = last.posts - first.posts;
+
+  return {
+    avgFollowersPerDay: Math.round((followersDiff / daysDiff) * 100) / 100,
+    avgPostsPerDay: Math.round((postsDiff / daysDiff) * 100) / 100,
+    totalDays: daysDiff,
+    latestFollowers: last.followers,
+    latestPosts: last.posts,
   };
 };
 
@@ -86,9 +123,14 @@ async function main(): Promise<void> {
         }
       }
 
-      let xData: XMetrics = { followers: 0, totalPosts: 0 };
-      if (yesterday) {
-        xData = yesterday.x;
+      // Xデータは前日から継承（手動入力はスプシで行う）
+      let xData: XMetrics = { followers: 0, totalPosts: 0, updatedAt: null };
+      if (yesterday && yesterday.x) {
+        xData = {
+          followers: yesterday.x.followers,
+          totalPosts: yesterday.x.totalPosts,
+          updatedAt: yesterday.x.updatedAt || null,
+        };
       }
 
       todayMetrics.push({
@@ -116,6 +158,9 @@ async function main(): Promise<void> {
 
     // 全履歴を取得
     const allHistory = await sheets.getAllHistory();
+    
+    // X履歴を取得
+    const xHistory = await sheets.getXHistory();
 
     // サポーター数でソート
     const sorted = [...scoredMetrics].sort((a, b) => b.financie.supporters - a.financie.supporters);
@@ -123,7 +168,16 @@ async function main(): Promise<void> {
     // 履歴データを整形
     const historyData: { [key: string]: Array<{ date: string; supporters: number }> } = {};
     for (const [name, history] of allHistory) {
-      historyData[name] = history;
+      historyData[name] = history.map(h => ({ date: h.date, supporters: h.supporters }));
+    }
+
+    // X一日平均を計算
+    const xAverages: { [key: string]: XDailyAverage } = {};
+    for (const [name, history] of xHistory) {
+      const avg = calculateXDailyAverage(history);
+      if (avg) {
+        xAverages[name] = avg;
+      }
     }
 
     // JSON出力
@@ -131,6 +185,7 @@ async function main(): Promise<void> {
       updated: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }),
       ranking: sorted.map(m => {
         const owner = owners.find(o => o.name === m.name);
+        const xAvg = xAverages[m.name];
         return {
           name: m.name,
           supporters: m.financie.supporters,
@@ -139,10 +194,18 @@ async function main(): Promise<void> {
             ? m.financie.lastPostTime.split('T')[0] 
             : null,
           financieUrl: owner?.financieUrl || null,
-          xId: owner?.xId || null
+          xId: owner?.xId || null,
+          // Xデータ
+          xFollowers: xAvg?.latestFollowers || m.x.followers || 0,
+          xPosts: xAvg?.latestPosts || m.x.totalPosts || 0,
+          // 一日平均
+          xAvgFollowersPerDay: xAvg?.avgFollowersPerDay || 0,
+          xAvgPostsPerDay: xAvg?.avgPostsPerDay || 0,
+          xTotalDays: xAvg?.totalDays || 0,
         };
       }),
-      history: historyData
+      history: historyData,
+      xHistory: Object.fromEntries(xHistory),
     };
     
     const docsDir = path.join(process.cwd(), 'docs', 'data');
@@ -157,7 +220,8 @@ async function main(): Promise<void> {
 
     logger.info('\n=== Results Summary ===');
     sorted.slice(0, 10).forEach((m, i) => {
-      logger.info(`${i + 1}. ${m.name}: ${m.financie.supporters} supporters (weekly=${m.financie.weeklyPosts})`);
+      const xAvg = xAverages[m.name];
+      logger.info(`${i + 1}. ${m.name}: ${m.financie.supporters} supporters (weekly=${m.financie.weeklyPosts})${xAvg ? `, X: +${xAvg.avgFollowersPerDay}/day` : ''}`);
     });
 
     logger.info('\n=== Process Completed ===');
