@@ -95,7 +95,6 @@ export async function scrapeFinancie(
     const activityLink = await page.$(activitySelector);
     
     if (activityLink) {
-      // クリックとレスポンス待機を並行
       await Promise.all([
         page.waitForResponse(
           r => /\/(activities|activity_log)/.test(r.url()) && r.status() === 200,
@@ -104,63 +103,79 @@ export async function scrapeFinancie(
         activityLink.click()
       ]);
       
-      // 時間要素が出るまで待機
-      await page.waitForSelector('time, span.time, span.relative-time, span[class*="relative"]', { timeout: 8000 }).catch(() => {});
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2000);
       logger.info('[Fi] Navigated to activity page');
 
       // ========================================
-      // 投稿時間を取得
+      // 投稿時間を取得（複数形式対応）
       // ========================================
       const now = Date.now();
       const weekMs = 7 * 24 * 60 * 60 * 1000;
       const seen = new Set<number>();
 
       for (let i = 0; i < 12; i++) {
-        // 方法1: time[datetime] から取得
-        const times: string[] = await page.evaluate(`
-          Array.from(document.querySelectorAll('time[datetime]'))
-            .map(function(e) { return e.getAttribute('datetime'); })
-            .filter(function(t) { return t; })
-        `);
+        // ページ全体のテキストから日付を抽出
+        const pageText: string = await page.evaluate(`document.body.innerText`);
         
-        times.forEach(t => {
-          if (t) {
-            const ts = new Date(t).getTime();
+        // 形式1: 「2026年01月26日 18:49」
+        const absoluteDates = pageText.match(/\d{4}年\d{2}月\d{2}日\s*\d{2}:\d{2}/g) || [];
+        absoluteDates.forEach(dateStr => {
+          const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日\s*(\d{2}):(\d{2})/);
+          if (match) {
+            const [, year, month, day, hour, minute] = match;
+            const ts = new Date(
+              parseInt(year, 10),
+              parseInt(month, 10) - 1,
+              parseInt(day, 10),
+              parseInt(hour, 10),
+              parseInt(minute, 10)
+            ).getTime();
             if (!isNaN(ts)) seen.add(ts);
           }
         });
 
-        // 方法2: 相対時間表記から取得
-        const relTimes: string[] = await page.evaluate(`
-          Array.from(document.querySelectorAll('span.time, span.relative-time, span[class*="relative"], [class*="time"], [class*="date"]'))
-            .map(function(e) { return e.textContent ? e.textContent.trim() : ''; })
-        `);
-        
-        relTimes.forEach(s => {
-          // 「〇日前」
+        // 形式2: 「2026年01月26日」（時間なし）
+        const dateOnly = pageText.match(/\d{4}年\d{2}月\d{2}日(?!\s*\d{2}:)/g) || [];
+        dateOnly.forEach(dateStr => {
+          const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+          if (match) {
+            const [, year, month, day] = match;
+            const ts = new Date(
+              parseInt(year, 10),
+              parseInt(month, 10) - 1,
+              parseInt(day, 10),
+              12, 0
+            ).getTime();
+            if (!isNaN(ts)) seen.add(ts);
+          }
+        });
+
+        // 形式3: 「〇日前」「〇時間前」「〇分前」
+        const relativePatterns = pageText.match(/(\d+)(日|時間|分|秒)前/g) || [];
+        relativePatterns.forEach(s => {
           const daysMatch = s.match(/(\d+)日前/);
           if (daysMatch) {
             const days = parseInt(daysMatch[1], 10);
             if (days <= 7) {
-              // 1分単位で丸めて重複防止
-              const ts = Math.floor((now - days * 24 * 60 * 60 * 1000) / 60000) * 60000;
-              seen.add(ts);
+              seen.add(now - days * 24 * 60 * 60 * 1000);
             }
           }
-          // 「〇時間前」
           const hoursMatch = s.match(/(\d+)時間前/);
           if (hoursMatch) {
-            const hours = parseInt(hoursMatch[1], 10);
-            const ts = Math.floor((now - hours * 60 * 60 * 1000) / 60000) * 60000;
-            seen.add(ts);
+            seen.add(now - parseInt(hoursMatch[1], 10) * 60 * 60 * 1000);
           }
-          // 「〇分前」「〇秒前」「たった今」
-          if (s.includes('分前') || s.includes('秒前') || s.includes('たった今')) {
-            const ts = Math.floor(now / 60000) * 60000;
-            seen.add(ts);
+          const minsMatch = s.match(/(\d+)分前/);
+          if (minsMatch) {
+            seen.add(now - parseInt(minsMatch[1], 10) * 60 * 1000);
           }
         });
+
+        // 「たった今」
+        if (pageText.includes('たった今')) {
+          seen.add(now);
+        }
+
+        logger.info(`[Fi] Scroll ${i + 1}: found ${seen.size} dates`);
 
         // 7日より古い投稿に到達したら終了
         if (seen.size > 0) {
@@ -181,7 +196,6 @@ export async function scrapeFinancie(
       const recentPosts = [...seen].filter(t => now - t <= weekMs);
       weekly = recentPosts.length;
 
-      // 最新投稿時間
       if (seen.size > 0) {
         const latestTs = Math.max(...seen);
         lastIso = new Date(latestTs).toISOString();
