@@ -1,6 +1,6 @@
 // src/sheets/client.ts
 
-import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { Owner, DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics } from '../types';
 import { logger } from '../utils/logger';
@@ -151,38 +151,36 @@ export class SheetsClient {
   async updateRanking(metrics: ScoredMetrics[]): Promise<void> {
     await this.init();
     
-    let sheet = this.doc.sheetsByTitle['Ranking'];
-    if (!sheet) {
-      sheet = await this.doc.addSheet({
-        title: 'Ranking',
-        headerValues: [
-          'rank', 'name', 'score', 'supporters', 'weekly_posts', 'last_post',
-          'x_followers', 'x_posts', 'date'
-        ],
-      });
-      logger.info('Created Ranking sheet');
+    // 既存のRankingシートを削除して新規作成
+    const existingSheet = this.doc.sheetsByTitle['Ranking'];
+    if (existingSheet) {
+      await existingSheet.delete();
     }
+    
+    const sheet = await this.doc.addSheet({
+      title: 'Ranking',
+      headerValues: [
+        '順位', '名前', 'サポーター数', '最終投稿', '週間投稿', 'Xフォロワー', 'X投稿数'
+      ],
+    });
+    logger.info('Created Ranking sheet');
 
-    const existingRows = await sheet.getRows();
-    for (const row of existingRows) {
-      await row.delete();
-    }
-
-    const sorted = [...metrics].sort((a, b) => b.score - a.score);
+    // サポーター数で降順ソート
+    const sorted = [...metrics].sort((a, b) => b.financie.supporters - a.financie.supporters);
 
     const rows = sorted.map((m, i) => ({
-      rank: i + 1,
-      name: m.name,
-      score: m.score,
-      supporters: m.financie.supporters,
-      weekly_posts: m.financie.weeklyPosts,
-      last_post: m.financie.lastPostTime || '',
-      x_followers: m.x.followers,
-      x_posts: m.x.totalPosts,
-      date: m.date,
+      '順位': i + 1,
+      '名前': m.name,
+      'サポーター数': m.financie.supporters,
+      '最終投稿': m.financie.lastPostTime 
+        ? m.financie.lastPostTime.split('T')[0]
+        : '',
+      '週間投稿': m.financie.weeklyPosts,
+      'Xフォロワー': m.x.followers,
+      'X投稿数': m.x.totalPosts,
     }));
 
     await sheet.addRows(rows);
-    logger.info(`Updated Ranking with ${rows.length} rows`);
+    logger.info(`Updated Ranking with ${rows.length} rows (sorted by supporters)`);
   }
 }
