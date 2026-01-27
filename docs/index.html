@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FiNANCiE オーナーランキング</title>
+  <title>FiNANCiEオーナーチャレンジ フォロワーランキング</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * {
@@ -31,12 +31,13 @@
     }
     
     h1 {
-      font-size: 2rem;
+      font-size: 1.8rem;
       margin-bottom: 10px;
       background: linear-gradient(90deg, #00d4ff, #7b2fff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      line-height: 1.4;
     }
     
     .updated {
@@ -228,7 +229,7 @@
       }
       
       h1 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
       }
       
       .links a {
@@ -245,7 +246,7 @@
 <body>
   <div class="container">
     <header>
-      <h1>🏆 FiNANCiE オーナーランキング</h1>
+      <h1>🏆 FiNANCiEオーナーチャレンジ<br>フォロワーランキング</h1>
       <p class="updated">最終更新: <span id="lastUpdated">-</span></p>
     </header>
     
@@ -335,7 +336,6 @@
       document.getElementById('modalTitle').textContent = name + ' - サポーター推移';
       document.getElementById('modalOverlay').classList.add('active');
       
-      // デフォルトは1W
       document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelector('.period-btn[data-period="1W"]').classList.add('active');
       
@@ -456,7 +456,6 @@
       });
     }
     
-    // イベントリスナー
     document.getElementById('modalClose').addEventListener('click', closeModal);
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
       if (e.target === this) closeModal();
@@ -470,7 +469,6 @@
       });
     });
     
-    // 初期化
     loadRanking();
   </script>
 </body>
