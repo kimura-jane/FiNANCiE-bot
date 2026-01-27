@@ -18,31 +18,23 @@ export async function scrapeFinancie(
     // サポーター数取得: window.NUXT（URL-encode対応）
     // ========================================
     try {
-      // ブラウザ側で NUXT データを取得
-      supporters = await page.evaluate(() => {
-        const w = window as any;
-        let raw = w.__NUXT__ || w.NUXT;
-        
-        // URL-encode されている場合はデコード
-        if (typeof raw === 'string') {
-          try {
-            raw = JSON.parse(decodeURIComponent(raw));
-          } catch {
-            return 0;
+      supporters = await page.evaluate(`
+        (function() {
+          var raw = window.__NUXT__ || window.NUXT;
+          if (typeof raw === 'string') {
+            try { raw = JSON.parse(decodeURIComponent(raw)); }
+            catch(e) { return 0; }
           }
-        }
-        
-        if (!raw) return 0;
-        
-        // 複数のパスを試す
-        return (
-          raw?.state?.owner?.supporters_count ??
-          raw?.data?.[0]?.owner?.supporters_count ??
-          raw?.state?.community?.supporters_count ??
-          raw?.payload?.owner?.supporters_count ??
-          0
-        );
-      });
+          if (!raw) return 0;
+          return (
+            (raw.state && raw.state.owner && raw.state.owner.supporters_count) ||
+            (raw.data && raw.data[0] && raw.data[0].owner && raw.data[0].owner.supporters_count) ||
+            (raw.state && raw.state.community && raw.state.community.supporters_count) ||
+            (raw.payload && raw.payload.owner && raw.payload.owner.supporters_count) ||
+            0
+          );
+        })()
+      `);
       
       if (supporters > 0) {
         logger.info(`[Fi] Supporters from NUXT: ${supporters}`);
@@ -102,7 +94,6 @@ export async function scrapeFinancie(
     const activityLink = await page.$(activitySelector);
     
     if (activityLink) {
-      // クリックとレスポンス待機を並行
       await Promise.all([
         page.waitForResponse(
           r => r.url().includes('activit') && r.status() === 200,
@@ -111,7 +102,6 @@ export async function scrapeFinancie(
         activityLink.click()
       ]);
       
-      // 追加の安定待機
       await page.waitForTimeout(1500);
       logger.info('[Fi] Navigated to activity page');
 
@@ -123,10 +113,11 @@ export async function scrapeFinancie(
       const seen = new Set<number>();
 
       for (let i = 0; i < 12; i++) {
-        // time[datetime] から投稿時間を取得
-        const times = await page.$$eval('time[datetime]', els => 
-          els.map(e => e.getAttribute('datetime')).filter(Boolean)
-        );
+        const times: string[] = await page.evaluate(`
+          Array.from(document.querySelectorAll('time[datetime]'))
+            .map(function(e) { return e.getAttribute('datetime'); })
+            .filter(function(t) { return t; })
+        `);
         
         times.forEach(t => {
           if (t) {
@@ -135,7 +126,6 @@ export async function scrapeFinancie(
           }
         });
 
-        // 7日より古い投稿に到達したら終了
         if (seen.size > 0) {
           const oldest = Math.min(...seen);
           if (now - oldest > weekMs) {
@@ -144,28 +134,25 @@ export async function scrapeFinancie(
           }
         }
 
-        // スクロール
-        await page.mouse.wheel(0, 1200);
+        await page.evaluate('window.scrollBy(0, 1200)');
         await page.waitForTimeout(600);
       }
 
       // ========================================
-      // 相対時間表記のフォールバック（「〇日前」）
+      // 相対時間表記のフォールバック
       // ========================================
       if (seen.size < 3) {
         try {
-          const relTimes = await page.$$eval(
-            '[class*="time"], [class*="date"], [class*="ago"]',
-            els => els.map(e => e.textContent?.trim() || '')
-          );
+          const relTimes: string[] = await page.evaluate(`
+            Array.from(document.querySelectorAll('[class*="time"], [class*="date"], [class*="ago"]'))
+              .map(function(e) { return e.textContent ? e.textContent.trim() : ''; })
+          `);
           
           relTimes.forEach(s => {
-            // 「〇日前」形式
             const daysMatch = s.match(/(\d+)日前/);
             if (daysMatch && parseInt(daysMatch[1], 10) <= 6) {
               seen.add(now - parseInt(daysMatch[1], 10) * 24 * 60 * 60 * 1000);
             }
-            // 「〇時間前」「〇分前」「〇秒前」「たった今」
             if (s.includes('時間前') || s.includes('分前') || s.includes('秒前') || s.includes('たった今')) {
               seen.add(now);
             }
@@ -183,7 +170,6 @@ export async function scrapeFinancie(
       const recentPosts = [...seen].filter(t => now - t <= weekMs);
       weekly = recentPosts.length;
 
-      // 最新投稿時間
       if (seen.size > 0) {
         lastIso = new Date(Math.max(...seen)).toISOString();
       }
