@@ -104,6 +104,7 @@ export class SheetsClient {
       const x: XMetrics = {
         followers: parseInt(row.get('x_followers') || '0', 10) || 0,
         totalPosts: parseInt(row.get('x_posts') || '0', 10) || 0,
+        updatedAt: row.get('x_updated') || null,
       };
 
       metricsMap.set(name, {
@@ -117,8 +118,14 @@ export class SheetsClient {
     return metricsMap;
   }
 
-  // 全履歴を取得
-  async getAllHistory(): Promise<Map<string, Array<{ date: string; supporters: number }>>> {
+  // 全履歴を取得（X履歴も含む）
+  async getAllHistory(): Promise<Map<string, Array<{ 
+    date: string; 
+    supporters: number;
+    xFollowers: number;
+    xPosts: number;
+    xUpdated: string | null;
+  }>>> {
     await this.init();
     
     const sheet = this.doc.sheetsByTitle['History'];
@@ -128,19 +135,28 @@ export class SheetsClient {
     }
 
     const rows = await sheet.getRows();
-    const historyMap = new Map<string, Array<{ date: string; supporters: number }>>();
+    const historyMap = new Map<string, Array<{ 
+      date: string; 
+      supporters: number;
+      xFollowers: number;
+      xPosts: number;
+      xUpdated: string | null;
+    }>>();
 
     for (const row of rows) {
       const date = row.get('date') || '';
       const name = row.get('name') || '';
       const supporters = parseInt(row.get('supporters') || '0', 10) || 0;
+      const xFollowers = parseInt(row.get('x_followers') || '0', 10) || 0;
+      const xPosts = parseInt(row.get('x_posts') || '0', 10) || 0;
+      const xUpdated = row.get('x_updated') || null;
 
       if (!date || !name) continue;
 
       if (!historyMap.has(name)) {
         historyMap.set(name, []);
       }
-      historyMap.get(name)!.push({ date, supporters });
+      historyMap.get(name)!.push({ date, supporters, xFollowers, xPosts, xUpdated });
     }
 
     // 日付順にソート
@@ -149,6 +165,59 @@ export class SheetsClient {
     }
 
     return historyMap;
+  }
+
+  // X更新履歴だけを取得（一日平均計算用）
+  async getXHistory(): Promise<Map<string, Array<{
+    date: string;
+    followers: number;
+    posts: number;
+    updatedAt: string;
+  }>>> {
+    await this.init();
+    
+    const sheet = this.doc.sheetsByTitle['History'];
+    if (!sheet) {
+      return new Map();
+    }
+
+    const rows = await sheet.getRows();
+    const xHistoryMap = new Map<string, Array<{
+      date: string;
+      followers: number;
+      posts: number;
+      updatedAt: string;
+    }>>();
+
+    for (const row of rows) {
+      const name = row.get('name') || '';
+      const xUpdated = row.get('x_updated') || '';
+      
+      // x_updatedがある行だけ取得
+      if (!name || !xUpdated) continue;
+
+      const date = row.get('date') || '';
+      const followers = parseInt(row.get('x_followers') || '0', 10) || 0;
+      const posts = parseInt(row.get('x_posts') || '0', 10) || 0;
+
+      if (!xHistoryMap.has(name)) {
+        xHistoryMap.set(name, []);
+      }
+      
+      xHistoryMap.get(name)!.push({
+        date,
+        followers,
+        posts,
+        updatedAt: xUpdated,
+      });
+    }
+
+    // 日付順にソート
+    for (const [name, history] of xHistoryMap) {
+      history.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
+    }
+
+    return xHistoryMap;
   }
 
   async appendHistory(metrics: DailyMetrics[]): Promise<void> {
@@ -160,7 +229,7 @@ export class SheetsClient {
         title: 'History',
         headerValues: [
           'date', 'name', 'supporters', 'weekly_posts', 'last_post',
-          'x_followers', 'x_posts'
+          'x_followers', 'x_posts', 'x_updated'
         ],
       });
       logger.info('Created History sheet');
@@ -174,6 +243,7 @@ export class SheetsClient {
       last_post: m.financie.lastPostTime || '',
       x_followers: m.x.followers,
       x_posts: m.x.totalPosts,
+      x_updated: m.x.updatedAt || '',
     }));
 
     await sheet.addRows(rows);
