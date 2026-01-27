@@ -1,6 +1,4 @@
-// src/index.ts
-
-import { launchBrowser, createContext, createPage, closeBrowser } from './utils/browser';
+import { launchBrowser, createContext, closeBrowser } from './utils/browser';
 import { scrapeFinancie } from './scrapers/financie';
 import { SheetsClient } from './sheets/client';
 import { randomDelay } from './utils/delay';
@@ -51,7 +49,6 @@ async function main(): Promise<void> {
 
     browser = await launchBrowser();
     const context = await createContext(browser);
-    const page = await createPage(context);
 
     const todayDate = sheets.getTodayDate();
     const todayMetrics: DailyMetrics[] = [];
@@ -70,19 +67,27 @@ async function main(): Promise<void> {
       };
       
       if (owner.financieUrl) {
-        const result = await scrapeFinancie(page, owner.financieUrl);
+        // 各オーナーごとに新しいページを作成
+        const page = await context.newPage();
         
-        if (result.success && result.data) {
-          financieData = {
-            supporters: result.data.supporters > 0 
-              ? result.data.supporters 
-              : (yesterday?.financie.supporters || 0),
-            weeklyPosts: result.data.weeklyPosts,
-            lastPostTime: result.data.lastPostTime,
-          };
-        } else if (yesterday) {
-          financieData = yesterday.financie;
-          logger.warn(`Using yesterday's data for ${owner.name}`);
+        try {
+          const result = await scrapeFinancie(page, owner.financieUrl);
+          
+          if (result.success && result.data) {
+            financieData = {
+              supporters: result.data.supporters > 0 
+                ? result.data.supporters 
+                : (yesterday?.financie.supporters || 0),
+              weeklyPosts: result.data.weeklyPosts,
+              lastPostTime: result.data.lastPostTime,
+            };
+          } else if (yesterday) {
+            financieData = yesterday.financie;
+            logger.warn(`Using yesterday's data for ${owner.name}`);
+          }
+        } finally {
+          // 必ずページを閉じる
+          await page.close();
         }
       }
 
