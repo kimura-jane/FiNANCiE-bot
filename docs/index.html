@@ -35,6 +35,7 @@
       background: linear-gradient(90deg, #00d4ff, #7b2fff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .updated {
@@ -188,10 +189,8 @@
         const response = await fetch('data/ranking.json');
         const data = await response.json();
         
-        // 最終更新日時
         document.getElementById('lastUpdated').textContent = data.updated || '-';
         
-        // テーブル作成
         const tbody = document.getElementById('rankingBody');
         tbody.innerHTML = data.ranking.map((item, i) => `
           <tr>
@@ -203,7 +202,6 @@
           </tr>
         `).join('');
         
-        // グラフ作成
         const maxSupporters = Math.max(...data.ranking.map(r => r.supporters));
         const chart = document.getElementById('barChart');
         chart.innerHTML = data.ranking.slice(0, 15).map(item => `
