@@ -1,5 +1,3 @@
-// src/sheets/client.ts
-
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { Owner, DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics } from '../types';
@@ -58,7 +56,7 @@ export class SheetsClient {
     const owners: Owner[] = [];
 
     for (const row of rows) {
-      const name = row.get('名前') || row.get('name') || '';
+      const name = row.get('名前') || row.get('name') || row.get('コミュニティ名') || '';
       const financieUrl = row.get('FiNANCiE URL') || row.get('financie_url') || '';
       const xId = row.get('X ID') || row.get('x_id') || '';
 
@@ -119,6 +117,40 @@ export class SheetsClient {
     return metricsMap;
   }
 
+  // 全履歴を取得
+  async getAllHistory(): Promise<Map<string, Array<{ date: string; supporters: number }>>> {
+    await this.init();
+    
+    const sheet = this.doc.sheetsByTitle['History'];
+    if (!sheet) {
+      logger.warn('History sheet not found');
+      return new Map();
+    }
+
+    const rows = await sheet.getRows();
+    const historyMap = new Map<string, Array<{ date: string; supporters: number }>>();
+
+    for (const row of rows) {
+      const date = row.get('date') || '';
+      const name = row.get('name') || '';
+      const supporters = parseInt(row.get('supporters') || '0', 10) || 0;
+
+      if (!date || !name) continue;
+
+      if (!historyMap.has(name)) {
+        historyMap.set(name, []);
+      }
+      historyMap.get(name)!.push({ date, supporters });
+    }
+
+    // 日付順にソート
+    for (const [name, history] of historyMap) {
+      history.sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    return historyMap;
+  }
+
   async appendHistory(metrics: DailyMetrics[]): Promise<void> {
     await this.init();
     
@@ -151,7 +183,6 @@ export class SheetsClient {
   async updateRanking(metrics: ScoredMetrics[]): Promise<void> {
     await this.init();
     
-    // 既存のRankingシートを削除して新規作成
     const existingSheet = this.doc.sheetsByTitle['Ranking'];
     if (existingSheet) {
       await existingSheet.delete();
@@ -165,7 +196,6 @@ export class SheetsClient {
     });
     logger.info('Created Ranking sheet');
 
-    // サポーター数で降順ソート
     const sorted = [...metrics].sort((a, b) => b.financie.supporters - a.financie.supporters);
 
     const rows = sorted.map((m, i) => ({
