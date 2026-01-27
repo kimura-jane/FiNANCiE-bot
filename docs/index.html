@@ -21,7 +21,7 @@
     }
     
     .container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
     }
     
@@ -55,7 +55,7 @@
     
     .ranking-table th,
     .ranking-table td {
-      padding: 12px 10px;
+      padding: 12px 8px;
       text-align: left;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
@@ -63,7 +63,7 @@
     .ranking-table th {
       background: rgba(255, 255, 255, 0.1);
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #aaa;
     }
     
@@ -74,7 +74,7 @@
     .rank {
       font-weight: bold;
       font-size: 1.2rem;
-      width: 50px;
+      width: 40px;
     }
     
     .rank-1 { color: #ffd700; }
@@ -82,7 +82,7 @@
     .rank-3 { color: #cd7f32; }
     
     .name-cell {
-      min-width: 180px;
+      min-width: 160px;
     }
     
     .community-name {
@@ -92,13 +92,13 @@
     
     .links {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: wrap;
     }
     
     .links a {
-      font-size: 0.7rem;
-      padding: 3px 8px;
+      font-size: 0.65rem;
+      padding: 2px 6px;
       border-radius: 4px;
       text-decoration: none;
       transition: opacity 0.2s;
@@ -131,6 +131,20 @@
     
     .weekly {
       color: #7b2fff;
+    }
+    
+    .x-data {
+      color: #aaa;
+      font-size: 0.85rem;
+    }
+    
+    .x-avg {
+      font-size: 0.75rem;
+      color: #4ade80;
+    }
+    
+    .x-avg.negative {
+      color: #f87171;
     }
     
     /* モーダル */
@@ -186,6 +200,36 @@
       opacity: 0.7;
     }
     
+    .chart-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .chart-tab {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    
+    .chart-tab:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .chart-tab.active {
+      background: #00d4ff;
+      color: #000;
+    }
+    
+    .chart-tab.x-tab.active {
+      background: #333;
+      color: #fff;
+    }
+    
     .period-buttons {
       display: flex;
       gap: 8px;
@@ -215,17 +259,51 @@
       height: 300px;
     }
     
+    .stats-summary {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 12px 16px;
+      border-radius: 8px;
+      flex: 1;
+      min-width: 120px;
+    }
+    
+    .stat-label {
+      font-size: 0.75rem;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    .stat-value.positive {
+      color: #4ade80;
+    }
+    
+    .stat-value.negative {
+      color: #f87171;
+    }
+    
     .no-data {
       text-align: center;
       color: #888;
       padding: 40px;
     }
     
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .ranking-table th,
       .ranking-table td {
-        padding: 8px 6px;
-        font-size: 0.8rem;
+        padding: 8px 4px;
+        font-size: 0.75rem;
       }
       
       h1 {
@@ -233,12 +311,20 @@
       }
       
       .links a {
-        font-size: 0.65rem;
-        padding: 2px 6px;
+        font-size: 0.6rem;
+        padding: 2px 4px;
       }
       
       .modal {
         padding: 16px;
+      }
+      
+      .x-data {
+        font-size: 0.75rem;
+      }
+      
+      .x-avg {
+        font-size: 0.65rem;
       }
     }
   </style>
@@ -255,13 +341,14 @@
         <tr>
           <th>順位</th>
           <th>コミュニティ</th>
-          <th>サポーター数</th>
+          <th>サポーター</th>
           <th>週間投稿</th>
-          <th>最終投稿</th>
+          <th>Xフォロワー</th>
+          <th>X投稿数</th>
         </tr>
       </thead>
       <tbody id="rankingBody">
-        <tr><td colspan="5" style="text-align:center;">読み込み中...</td></tr>
+        <tr><td colspan="6" style="text-align:center;">読み込み中...</td></tr>
       </tbody>
     </table>
   </div>
@@ -270,9 +357,17 @@
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title" id="modalTitle">サポーター推移</span>
+        <span class="modal-title" id="modalTitle">推移</span>
         <button class="modal-close" id="modalClose">×</button>
       </div>
+      
+      <div class="chart-tabs">
+        <button class="chart-tab active" data-type="supporters">サポーター</button>
+        <button class="chart-tab x-tab" data-type="xFollowers">Xフォロワー</button>
+      </div>
+      
+      <div class="stats-summary" id="statsSummary"></div>
+      
       <div class="period-buttons">
         <button class="period-btn active" data-period="1W">1W</button>
         <button class="period-btn" data-period="1M">1M</button>
@@ -280,7 +375,7 @@
         <button class="period-btn" data-period="ALL">ALL</button>
       </div>
       <div class="chart-container">
-        <canvas id="supporterChart"></canvas>
+        <canvas id="mainChart"></canvas>
       </div>
       <div class="no-data" id="noData" style="display:none;">
         データがありません
@@ -292,6 +387,7 @@
     let rankingData = null;
     let currentChart = null;
     let currentName = null;
+    let currentType = 'supporters';
     
     async function loadRanking() {
       try {
@@ -310,6 +406,19 @@
             : '';
           const chartLink = `<a class="link-chart" onclick="openChart('${item.name.replace(/'/g, "\\'")}')">📈推移</a>`;
           
+          // X一日平均の表示
+          let xAvgHtml = '';
+          if (item.xAvgFollowersPerDay && item.xTotalDays > 0) {
+            const sign = item.xAvgFollowersPerDay >= 0 ? '+' : '';
+            const cssClass = item.xAvgFollowersPerDay >= 0 ? '' : 'negative';
+            xAvgHtml = `<div class="x-avg ${cssClass}">${sign}${item.xAvgFollowersPerDay}/日</div>`;
+          }
+          
+          let xPostsAvgHtml = '';
+          if (item.xAvgPostsPerDay && item.xTotalDays > 0) {
+            xPostsAvgHtml = `<div class="x-avg">${item.xAvgPostsPerDay}/日</div>`;
+          }
+          
           return `
             <tr>
               <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
@@ -319,7 +428,14 @@
               </td>
               <td class="supporters">${item.supporters.toLocaleString()}</td>
               <td class="weekly">${item.weeklyPosts}</td>
-              <td>${item.lastPost || '-'}</td>
+              <td class="x-data">
+                ${item.xFollowers ? item.xFollowers.toLocaleString() : '-'}
+                ${xAvgHtml}
+              </td>
+              <td class="x-data">
+                ${item.xPosts ? item.xPosts.toLocaleString() : '-'}
+                ${xPostsAvgHtml}
+              </td>
             </tr>
           `;
         }).join('');
@@ -327,18 +443,23 @@
       } catch (error) {
         console.error('データの読み込みに失敗:', error);
         document.getElementById('rankingBody').innerHTML = 
-          '<tr><td colspan="5" style="text-align:center;color:#ff6b6b;">データの読み込みに失敗しました</td></tr>';
+          '<tr><td colspan="6" style="text-align:center;color:#ff6b6b;">データの読み込みに失敗しました</td></tr>';
       }
     }
     
     function openChart(name) {
       currentName = name;
-      document.getElementById('modalTitle').textContent = name + ' - サポーター推移';
+      currentType = 'supporters';
+      document.getElementById('modalTitle').textContent = name + ' - 推移';
       document.getElementById('modalOverlay').classList.add('active');
       
       document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelector('.period-btn[data-period="1W"]').classList.add('active');
       
+      document.querySelectorAll('.chart-tab').forEach(btn => btn.classList.remove('active'));
+      document.querySelector('.chart-tab[data-type="supporters"]').classList.add('active');
+      
+      updateStatsSummary();
       renderChart('1W');
     }
     
@@ -347,6 +468,62 @@
       if (currentChart) {
         currentChart.destroy();
         currentChart = null;
+      }
+    }
+    
+    function updateStatsSummary() {
+      const item = rankingData.ranking.find(r => r.name === currentName);
+      const summary = document.getElementById('statsSummary');
+      
+      if (currentType === 'supporters') {
+        const history = rankingData.history[currentName] || [];
+        const latest = history.length > 0 ? history[history.length - 1].supporters : item?.supporters || 0;
+        const oldest = history.length > 1 ? history[0].supporters : latest;
+        const diff = latest - oldest;
+        const days = history.length > 1 ? history.length - 1 : 0;
+        const avg = days > 0 ? (diff / days).toFixed(2) : 0;
+        
+        summary.innerHTML = `
+          <div class="stat-box">
+            <div class="stat-label">現在</div>
+            <div class="stat-value">${latest.toLocaleString()}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">期間増減</div>
+            <div class="stat-value ${diff >= 0 ? 'positive' : 'negative'}">${diff >= 0 ? '+' : ''}${diff.toLocaleString()}</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">一日平均</div>
+            <div class="stat-value ${avg >= 0 ? 'positive' : 'negative'}">${avg >= 0 ? '+' : ''}${avg}</div>
+          </div>
+        `;
+      } else {
+        // Xフォロワー
+        const xHistory = rankingData.xHistory?.[currentName] || [];
+        if (xHistory.length > 0) {
+          const latest = xHistory[xHistory.length - 1];
+          const oldest = xHistory[0];
+          const diff = latest.followers - oldest.followers;
+          const days = item?.xTotalDays || 0;
+          const avg = item?.xAvgFollowersPerDay || 0;
+          
+          summary.innerHTML = `
+            <div class="stat-box">
+              <div class="stat-label">現在</div>
+              <div class="stat-value">${latest.followers.toLocaleString()}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">期間増減</div>
+              <div class="stat-value ${diff >= 0 ? 'positive' : 'negative'}">${diff >= 0 ? '+' : ''}${diff.toLocaleString()}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">一日平均 (${days}日間)</div>
+              <div class="stat-value ${avg >= 0 ? 'positive' : 'negative'}">${avg >= 0 ? '+' : ''}${avg}</div>
+            </div>
+          `;
+        } else {
+          summary.innerHTML = '<div class="stat-box"><div class="stat-label">Xデータなし</div></div>';
+        }
       }
     }
     
@@ -371,14 +548,27 @@
           return data;
       }
       
-      return data.filter(d => new Date(d.date) >= cutoff);
+      return data.filter(d => new Date(d.date || d.updatedAt) >= cutoff);
     }
     
     function renderChart(period) {
-      const history = rankingData.history[currentName];
-      const filteredData = filterDataByPeriod(history, period);
+      let data, valueKey, label, color;
       
-      const canvas = document.getElementById('supporterChart');
+      if (currentType === 'supporters') {
+        data = rankingData.history[currentName] || [];
+        valueKey = 'supporters';
+        label = 'サポーター数';
+        color = '#00d4ff';
+      } else {
+        data = rankingData.xHistory?.[currentName] || [];
+        valueKey = 'followers';
+        label = 'Xフォロワー数';
+        color = '#888';
+      }
+      
+      const filteredData = filterDataByPeriod(data, period);
+      
+      const canvas = document.getElementById('mainChart');
       const noData = document.getElementById('noData');
       
       if (currentChart) {
@@ -395,20 +585,21 @@
       noData.style.display = 'none';
       
       const labels = filteredData.map(d => {
-        const date = new Date(d.date);
+        const dateStr = d.date || d.updatedAt;
+        const date = new Date(dateStr);
         return `${date.getMonth() + 1}/${date.getDate()}`;
       });
-      const values = filteredData.map(d => d.supporters);
+      const values = filteredData.map(d => d[valueKey]);
       
       currentChart = new Chart(canvas, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [{
-            label: 'サポーター数',
+            label: label,
             data: values,
-            borderColor: '#00d4ff',
-            backgroundColor: 'rgba(0, 212, 255, 0.1)',
+            borderColor: color,
+            backgroundColor: color + '20',
             fill: true,
             tension: 0.3,
             pointRadius: filteredData.length > 30 ? 0 : 4,
@@ -466,6 +657,17 @@
         document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         renderChart(this.dataset.period);
+      });
+    });
+    
+    document.querySelectorAll('.chart-tab').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.chart-tab').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentType = this.dataset.type;
+        updateStatsSummary();
+        const activePeriod = document.querySelector('.period-btn.active').dataset.period;
+        renderChart(activePeriod);
       });
     });
     
