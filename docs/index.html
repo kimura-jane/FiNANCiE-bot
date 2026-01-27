@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FiNANCiE オーナーランキング</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #00d4ff, #7b2fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .updated {
+      color: #888;
+      font-size: 0.9rem;
+    }
+    
+    .ranking-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .ranking-table th,
+    .ranking-table td {
+      padding: 15px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .ranking-table th {
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+    
+    .ranking-table tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .rank {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    .rank-1 { color: #ffd700; }
+    .rank-2 { color: #c0c0c0; }
+    .rank-3 { color: #cd7f32; }
+    
+    .name {
+      font-weight: 600;
+    }
+    
+    .supporters {
+      color: #00d4ff;
+      font-weight: bold;
+    }
+    
+    .weekly {
+      color: #7b2fff;
+    }
+    
+    .chart-container {
+      margin-top: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .chart-title {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    
+    .bar-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .bar-name {
+      width: 120px;
+      font-size: 0.8rem;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .bar {
+      height: 24px;
+      background: linear-gradient(90deg, #00d4ff, #7b2fff);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    .bar-value {
+      font-size: 0.8rem;
+      color: #aaa;
+      min-width: 50px;
+    }
+    
+    @media (max-width: 600px) {
+      .ranking-table th,
+      .ranking-table td {
+        padding: 10px 8px;
+        font-size: 0.85rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .bar-name {
+        width: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏆 FiNANCiE オーナーランキング</h1>
+      <p class="updated">最終更新: <span id="lastUpdated">-</span></p>
+    </header>
+    
+    <table class="ranking-table">
+      <thead>
+        <tr>
+          <th>順位</th>
+          <th>名前</th>
+          <th>サポーター数</th>
+          <th>週間投稿</th>
+          <th>最終投稿</th>
+        </tr>
+      </thead>
+      <tbody id="rankingBody">
+        <tr><td colspan="5" style="text-align:center;">読み込み中...</td></tr>
+      </tbody>
+    </table>
+    
+    <div class="chart-container">
+      <h2 class="chart-title">📊 サポーター数グラフ</h2>
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+  </div>
+  
+  <script>
+    async function loadRanking() {
+      try {
+        const response = await fetch('data/ranking.json');
+        const data = await response.json();
+        
+        // 最終更新日時
+        document.getElementById('lastUpdated').textContent = data.updated || '-';
+        
+        // テーブル作成
+        const tbody = document.getElementById('rankingBody');
+        tbody.innerHTML = data.ranking.map((item, i) => `
+          <tr>
+            <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
+            <td class="name">${item.name}</td>
+            <td class="supporters">${item.supporters.toLocaleString()}</td>
+            <td class="weekly">${item.weeklyPosts}</td>
+            <td>${item.lastPost || '-'}</td>
+          </tr>
+        `).join('');
+        
+        // グラフ作成
+        const maxSupporters = Math.max(...data.ranking.map(r => r.supporters));
+        const chart = document.getElementById('barChart');
+        chart.innerHTML = data.ranking.slice(0, 15).map(item => `
+          <div class="bar-row">
+            <span class="bar-name">${item.name}</span>
+            <div class="bar" style="width: ${(item.supporters / maxSupporters) * 100}%"></div>
+            <span class="bar-value">${item.supporters.toLocaleString()}</span>
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error('データの読み込みに失敗:', error);
+        document.getElementById('rankingBody').innerHTML = 
+          '<tr><td colspan="5" style="text-align:center;color:#ff6b6b;">データの読み込みに失敗しました</td></tr>';
+      }
+    }
+    
+    loadRanking();
+  </script>
+</body>
+</html>
