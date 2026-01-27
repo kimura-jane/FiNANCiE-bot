@@ -37,11 +37,11 @@ const extractUsername = (idOrUrl: string): string => {
  */
 const strip = (s: string): string => {
   return s
-    .replace(/<[^>]+>/g, '')      // HTMLタグ除去
-    .replace(/\u202F/g, '')       // ナロー・ノーブレークスペース除去
-    .replace(/\u00A0/g, '')       // ノーブレークスペース除去
-    .replace(/,/g, '')            // カンマ除去
-    .replace(/\s+/g, '')          // 通常スペース除去
+    .replace(/<[^>]+>/g, '')
+    .replace(/\u202F/g, '')
+    .replace(/\u00A0/g, '')
+    .replace(/,/g, '')
+    .replace(/\s+/g, '')
     .trim();
 };
 
@@ -75,6 +75,7 @@ const fetchFromSyndication = async (
       headers: { 
         'User-Agent': UA,
         'Referer': 'https://platform.twitter.com/',
+        'Origin': 'https://platform.twitter.com',
       },
     });
     
@@ -89,15 +90,22 @@ const fetchFromSyndication = async (
       return null;
     }
     
-    const data = JSON.parse(text);
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      logger.warn(`  Syndication: JSON parse failed`);
+      return null;
+    }
+    
     if (!data || data.length === 0) {
       logger.warn(`  Syndication: Empty array`);
       return null;
     }
     
     const result = {
-      tweets: data[0].statuses_count || 0,
-      followers: data[0].followers_count || 0,
+      tweets: data[0].statuses_count ?? data[0].tweet_count ?? 0,
+      followers: data[0].followers_count ?? 0,
     };
     
     logger.info(`  Syndication OK: tweets=${result.tweets}, followers=${result.followers}`);
@@ -115,12 +123,12 @@ const fetchFromNitter = async (
   username: string,
   mirror: string
 ): Promise<{ tweets: number; followers: number } | null> => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  
   try {
     const url = `${mirror}/${username}`;
     logger.info(`  Trying Nitter: ${url}`);
-    
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
     
     const response = await fetch(url, {
       headers: {
@@ -131,8 +139,6 @@ const fetchFromNitter = async (
       signal: controller.signal,
     });
     
-    clearTimeout(timeout);
-    
     if (!response.ok) {
       logger.warn(`  Nitter ${mirror}: HTTP ${response.status}`);
       return null;
@@ -140,10 +146,8 @@ const fetchFromNitter = async (
     
     const html = await response.text();
     
-    // ラベル付きで統計を取得
     const stats: Record<string, number> = {};
     
-    // <li class="posts"><span class="profile-stat-num">...</span>...</li>
     const liPattern = /<li class="([^"]+)"[^>]*>[\s\S]*?<span class="profile-stat-num"[^>]*>([\s\S]*?)<\/span>/gi;
     let match;
     
@@ -155,7 +159,6 @@ const fetchFromNitter = async (
       logger.info(`    Found: ${label} = ${num}`);
     }
     
-    // 代替パターン: profile-stat-num だけを順番に取得
     if (Object.keys(stats).length === 0) {
       const numPattern = /<span class="profile-stat-num"[^>]*>([\s\S]*?)<\/span>/gi;
       const numbers: number[] = [];
@@ -166,20 +169,19 @@ const fetchFromNitter = async (
       }
       
       if (numbers.length >= 3) {
-        // 通常: [tweets, following, followers, likes]
         stats['tweets'] = numbers[0];
         stats['followers'] = numbers[2];
         logger.info(`    Fallback parse: tweets=${numbers[0]}, followers=${numbers[2]}`);
       }
     }
     
-    const tweets = stats['posts'] || stats['tweets'] || 0;
-    const followers = stats['followers'] || 0;
-    
-    if (tweets === 0 && followers === 0) {
+    if (Object.keys(stats).length === 0) {
       logger.warn(`  Nitter ${mirror}: Could not parse stats`);
       return null;
     }
+    
+    const tweets = stats['posts'] ?? stats['tweets'] ?? stats['notes'] ?? 0;
+    const followers = stats['followers'] ?? 0;
     
     logger.info(`  Nitter OK: tweets=${tweets}, followers=${followers}`);
     return { tweets, followers };
@@ -187,6 +189,8 @@ const fetchFromNitter = async (
     const message = error instanceof Error ? error.message : String(error);
     logger.warn(`  Nitter ${mirror}: ${message}`);
     return null;
+  } finally {
+    clearTimeout(timeout);
   }
 };
 
@@ -204,7 +208,6 @@ export const scrapeX = async (
   
   logger.info(`Scraping X: ${username}`);
   
-  // ① Syndication API を先に試す
   const viaSynd = await fetchFromSyndication(username);
   if (viaSynd) {
     return {
@@ -216,7 +219,6 @@ export const scrapeX = async (
     };
   }
   
-  // ② Nitter を試す
   for (const mirror of NITTER_MIRRORS) {
     await randomDelay(1, 3);
     const viaNitter = await fetchFromNitter(username, mirror);
@@ -231,7 +233,6 @@ export const scrapeX = async (
     }
   }
   
-  // 全部失敗
-  logger.error(`All sources failed for ${username}`);
+  logger.warn(`All sources failed for ${username}`);
   return { success: false, error: 'All sources failed' };
 };
