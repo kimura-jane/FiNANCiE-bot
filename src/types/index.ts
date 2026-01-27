@@ -8,8 +8,7 @@ export interface Owner {
 
 export interface FinancieMetrics {
   supporters: number;
-  totalPosts: number;
-  isActive: boolean;
+  weeklyPosts: number;
   lastPostTime: string | null;
 }
 
@@ -26,10 +25,8 @@ export interface DailyMetrics {
 }
 
 export interface DeltaMetrics {
-  financieActive: boolean;
-  xPosts: number;
   supporters: number;
-  followers: number;
+  weeklyPosts: number;
 }
 
 export interface ScoredMetrics extends DailyMetrics {
