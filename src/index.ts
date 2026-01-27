@@ -5,7 +5,7 @@ import { scrapeFinancie } from './scrapers/financie';
 import { SheetsClient } from './sheets/client';
 import { randomDelay } from './utils/delay';
 import { logger } from './utils/logger';
-import { DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics } from './types';
+import { DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics, Owner } from './types';
 
 /**
  * スコア計算（FiNANCiEのみ）
@@ -126,14 +126,19 @@ async function main(): Promise<void> {
     // JSON出力（GitHub Pages用）
     const rankingData = {
       updated: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }),
-      ranking: sorted.map(m => ({
-        name: m.name,
-        supporters: m.financie.supporters,
-        weeklyPosts: m.financie.weeklyPosts,
-        lastPost: m.financie.lastPostTime 
-          ? m.financie.lastPostTime.split('T')[0] 
-          : null
-      }))
+      ranking: sorted.map(m => {
+        const owner = owners.find(o => o.name === m.name);
+        return {
+          name: m.name,
+          supporters: m.financie.supporters,
+          weeklyPosts: m.financie.weeklyPosts,
+          lastPost: m.financie.lastPostTime 
+            ? m.financie.lastPostTime.split('T')[0] 
+            : null,
+          financieUrl: owner?.financieUrl || null,
+          xId: owner?.xId || null
+        };
+      })
     };
     
     const docsDir = path.join(process.cwd(), 'docs', 'data');
