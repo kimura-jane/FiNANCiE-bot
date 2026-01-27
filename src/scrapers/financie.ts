@@ -11,123 +11,84 @@ const parseNumber = (text: string | null): number => {
   return parseInt(cleaned, 10) || 0;
 };
 
-const isWithin24Hours = (timeText: string): boolean => {
-  if (!timeText) return false;
+/**
+ * 日付文字列をDateオブジェクトに変換
+ */
+const parseDate = (timeText: string): Date | null => {
+  if (!timeText) return null;
   
   const text = timeText.trim();
+  const now = new Date();
   
-  if (text.includes('分前') || text.includes('時間前')) {
-    return true;
+  // 「〇秒前」
+  const secMatch = text.match(/(\d+)秒前/);
+  if (secMatch) {
+    return new Date(now.getTime() - parseInt(secMatch[1]) * 1000);
   }
   
-  if (text === '1日前' || text.includes('1日前')) {
-    return true;
+  // 「〇分前」
+  const minMatch = text.match(/(\d+)分前/);
+  if (minMatch) {
+    return new Date(now.getTime() - parseInt(minMatch[1]) * 60 * 1000);
   }
   
-  if (text.includes('秒前') || text.includes('たった今') || text.includes('今')) {
-    return true;
+  // 「〇時間前」
+  const hourMatch = text.match(/(\d+)時間前/);
+  if (hourMatch) {
+    return new Date(now.getTime() - parseInt(hourMatch[1]) * 60 * 60 * 1000);
   }
   
+  // 「〇日前」
+  const dayMatch = text.match(/(\d+)日前/);
+  if (dayMatch) {
+    return new Date(now.getTime() - parseInt(dayMatch[1]) * 24 * 60 * 60 * 1000);
+  }
+  
+  // 「たった今」
+  if (text.includes('たった今') || text === '今') {
+    return now;
+  }
+  
+  // 絶対日付形式（例: 2026年01月25日 13:05）
   const dateMatch = text.match(/(\d{4})年(\d{1,2})月(\d{1,2})日\s*(\d{1,2}):(\d{2})/);
   if (dateMatch) {
     const [, year, month, day, hour, minute] = dateMatch;
-    const postDate = new Date(
+    return new Date(
       parseInt(year),
       parseInt(month) - 1,
       parseInt(day),
       parseInt(hour),
       parseInt(minute)
     );
-    
-    const now = new Date();
-    const diffMs = now.getTime() - postDate.getTime();
-    const diffHours = diffMs / (1000 * 60 * 60);
-    
-    return diffHours >= 0 && diffHours <= 24;
   }
   
+  // 日付のみ形式（例: 2026年01月25日）
   const dateOnlyMatch = text.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
   if (dateOnlyMatch) {
     const [, year, month, day] = dateOnlyMatch;
-    const postDate = new Date(
+    return new Date(
       parseInt(year),
       parseInt(month) - 1,
-      parseInt(day)
+      parseInt(day),
+      12, 0, 0
     );
-    
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-    
-    return postDate >= yesterday;
   }
   
-  // ISO形式の日付（datetime属性用）
+  // ISO形式
   if (text.match(/^\d{4}-\d{2}-\d{2}/)) {
-    const postDate = new Date(text);
-    const now = new Date();
-    const diffMs = now.getTime() - postDate.getTime();
-    const diffHours = diffMs / (1000 * 60 * 60);
-    return diffHours >= 0 && diffHours <= 24;
+    return new Date(text);
   }
   
-  return false;
+  return null;
 };
 
 /**
- * window.NUXT からサポーター数を抽出
+ * 直近7日以内かどうか判定
  */
-const extractFromNuxt = (html: string): number | null => {
-  try {
-    // window.__NUXT__ または window.NUXT を探す
-    const patterns = [
-      /window\.__NUXT__\s*=\s*(\{[\s\S]*?\});?\s*<\/script>/,
-      /window\.NUXT\s*=\s*(\{[\s\S]*?\});?\s*<\/script>/,
-      /__NUXT__\s*=\s*(\{[\s\S]*?\});/,
-    ];
-    
-    for (const pattern of patterns) {
-      const match = html.match(pattern);
-      if (match) {
-        // JSONをパースしやすい形に整形
-        let jsonStr = match[1];
-        
-        // 関数呼び出しを除去（Nuxt3形式対応）
-        jsonStr = jsonStr.replace(/\w+\([^)]*\)/g, 'null');
-        
-        try {
-          const data = JSON.parse(jsonStr);
-          
-          // 様々なパスを試す
-          const supporters = 
-            data?.state?.owner?.supporters_count ??
-            data?.data?.[0]?.owner?.supporters_count ??
-            data?.payload?.owner?.supporters_count ??
-            data?.state?.community?.supporters_count ??
-            null;
-          
-          if (supporters !== null) {
-            logger.info(`  NUXT extract: supporters=${supporters}`);
-            return supporters;
-          }
-        } catch (e) {
-          // パース失敗、次のパターンを試す
-        }
-      }
-    }
-    
-    // サポーター数を直接HTMLから探す
-    const supporterMatch = html.match(/supporters_count['":\s]+(\d+)/);
-    if (supporterMatch) {
-      const count = parseInt(supporterMatch[1], 10);
-      logger.info(`  Regex extract: supporters=${count}`);
-      return count;
-    }
-    
-    return null;
-  } catch (e) {
-    return null;
-  }
+const isWithinWeek = (date: Date): boolean => {
+  const now = new Date();
+  const weekMs = 7 * 24 * 60 * 60 * 1000;
+  return (now.getTime() - date.getTime()) <= weekMs;
 };
 
 export const scrapeFinancie = async (
@@ -140,47 +101,37 @@ export const scrapeFinancie = async (
     await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
     await randomDelay(2, 4);
     
-    // HTMLを取得
     const html = await page.content();
     
     // ========== サポーター数を取得 ==========
     let supporters = 0;
     
-    // 方法1: NUXTデータから抽出
-    const nuxtSupporters = extractFromNuxt(html);
-    if (nuxtSupporters !== null && nuxtSupporters > 0) {
-      supporters = nuxtSupporters;
-      logger.info(`Found supporters from NUXT: ${supporters}`);
-    }
+    // 方法1: DOMセレクターから取得
+    const selectors = [
+      '.profile_databox .profile_num span span',
+      'div:has-text("サポーター") span',
+      '[class*="supporter"] span',
+      '[class*="member"] span',
+    ];
     
-    // 方法2: DOMセレクターから取得
-    if (supporters === 0) {
-      const selectors = [
-        '.profile_databox .profile_num span span',
-        'div:has-text("サポーター") span',
-        '[class*="supporter"] span',
-        '[class*="member"] span',
-      ];
-      
-      for (const selector of selectors) {
-        try {
-          const el = await page.$(selector);
-          if (el) {
-            const text = await el.textContent();
-            const num = parseNumber(text);
-            if (num > 0) {
-              supporters = num;
-              logger.info(`Found supporters with "${selector}": ${supporters}`);
-              break;
-            }
+    for (const selector of selectors) {
+      try {
+        const el = await page.$(selector);
+        if (el) {
+          const text = await el.textContent();
+          const num = parseNumber(text);
+          if (num > 0) {
+            supporters = num;
+            logger.info(`Found supporters with "${selector}": ${supporters}`);
+            break;
           }
-        } catch (e) {
-          // 次のセレクターを試す
         }
+      } catch (e) {
+        // 次のセレクターを試す
       }
     }
     
-    // 方法3: テキストマッチング
+    // 方法2: テキストマッチング
     if (supporters === 0) {
       const match = html.match(/(\d[\d,]*)\s*(メンバー|人|サポーター)/);
       if (match) {
@@ -192,14 +143,12 @@ export const scrapeFinancie = async (
     // ========== 活動報告リンクを取得 ==========
     let activityLogUrl = '';
     
-    // 複数のセレクターパターン
     const linkSelectors = [
       'a[href*="activity_log"]',
       'a[href*="activities"]',
       'a[href*="activity"]',
       'a[data-tab-name="news"]',
       'a[data-tab="activities"]',
-      'a[data-tab="news"]',
     ];
     
     for (const selector of linkSelectors) {
@@ -218,7 +167,6 @@ export const scrapeFinancie = async (
       }
     }
     
-    // HTMLから直接検索
     if (!activityLogUrl) {
       const linkMatch = html.match(/href="([^"]*(?:activity_log|activities|activity)[^"]*)"/);
       if (linkMatch) {
@@ -228,9 +176,9 @@ export const scrapeFinancie = async (
       }
     }
 
-    // ========== 活動報告ページで最新投稿時間を取得 ==========
+    // ========== 活動報告ページで投稿を取得 ==========
     let lastPostTime: string | null = '不明';
-    let isActive = false;
+    let weeklyPosts = 0;
     
     if (activityLogUrl) {
       await randomDelay(3, 5);
@@ -239,66 +187,61 @@ export const scrapeFinancie = async (
         await page.goto(activityLogUrl, { waitUntil: 'networkidle', timeout: 30000 });
         await randomDelay(2, 3);
         
-        // datetime属性を優先的に取得
-        const timeEl = await page.$('time[datetime]');
-        if (timeEl) {
-          const datetime = await timeEl.getAttribute('datetime');
-          if (datetime) {
-            lastPostTime = datetime;
-            logger.info(`Found datetime attribute: ${lastPostTime}`);
-          }
-        }
+        const postDates: Date[] = [];
         
-        // テキストから取得
-        if (lastPostTime === '不明') {
-          const timeSelectors = [
-            'time',
-            '[class*="time"]',
-            '[class*="date"]',
-          ];
+        // スクロールして投稿を読み込む（最大3回）
+        for (let scroll = 0; scroll < 3; scroll++) {
+          // time要素を取得
+          const timeElements = await page.$$('time');
           
-          for (const selector of timeSelectors) {
+          for (const timeEl of timeElements) {
             try {
-              const el = await page.$(selector);
-              if (el) {
-                const text = await el.textContent();
-                if (text && text.trim()) {
-                  lastPostTime = text.trim();
-                  logger.info(`Found time with "${selector}": ${lastPostTime}`);
-                  break;
+              // datetime属性を優先
+              let timeText = await timeEl.getAttribute('datetime');
+              if (!timeText) {
+                timeText = await timeEl.textContent();
+              }
+              
+              if (timeText) {
+                const date = parseDate(timeText.trim());
+                if (date) {
+                  // 重複チェック
+                  const exists = postDates.some(d => 
+                    Math.abs(d.getTime() - date.getTime()) < 60000
+                  );
+                  if (!exists) {
+                    postDates.push(date);
+                  }
                 }
               }
             } catch (e) {
-              // 次のセレクターを試す
+              // 次の要素へ
             }
           }
-        }
-        
-        // ページ内テキストから検索
-        if (lastPostTime === '不明') {
-          const pageContent = await page.content();
-          const timePatterns = [
-            /(\d+秒前)/,
-            /(\d+分前)/,
-            /(\d+時間前)/,
-            /(\d+日前)/,
-            /(たった今)/,
-            /(\d{4}年\d{1,2}月\d{1,2}日\s*\d{1,2}:\d{2})/,
-            /datetime="([^"]+)"/,
-          ];
           
-          for (const pattern of timePatterns) {
-            const match = pageContent.match(pattern);
-            if (match) {
-              lastPostTime = match[1];
-              logger.info(`Found time from regex: ${lastPostTime}`);
-              break;
-            }
+          // 7日より古い投稿があれば終了
+          const oldestInView = postDates.filter(d => !isWithinWeek(d));
+          if (oldestInView.length > 0) {
+            break;
           }
+          
+          // スクロール
+          await page.mouse.wheel(0, 1200);
+          await randomDelay(0.5, 1);
         }
         
-        isActive = isWithin24Hours(lastPostTime || '');
-        logger.info(`Active status: ${isActive ? '◎ Active' : '× Inactive'} (${lastPostTime})`);
+        // 最新投稿日時
+        if (postDates.length > 0) {
+          postDates.sort((a, b) => b.getTime() - a.getTime());
+          lastPostTime = postDates[0].toISOString().split('T')[0] + ' ' + 
+                         postDates[0].toTimeString().slice(0, 5);
+        }
+        
+        // 週間投稿数
+        weeklyPosts = postDates.filter(d => isWithinWeek(d)).length;
+        
+        logger.info(`Found ${postDates.length} posts, ${weeklyPosts} in last 7 days`);
+        logger.info(`Last post: ${lastPostTime}`);
         
       } catch (e) {
         logger.warn(`Failed to scrape activity log: ${e}`);
@@ -307,15 +250,14 @@ export const scrapeFinancie = async (
       logger.warn('Activity log URL not found');
     }
     
-    logger.info(`FiNANCiE final: supporters=${supporters}, lastPost="${lastPostTime}", active=${isActive}`);
+    logger.info(`FiNANCiE final: supporters=${supporters}, weeklyPosts=${weeklyPosts}, lastPost="${lastPostTime}"`);
     
     return {
       success: true,
       data: { 
         supporters, 
-        totalPosts: 0,
+        weeklyPosts,
         lastPostTime, 
-        isActive 
       },
     };
   } catch (error) {
