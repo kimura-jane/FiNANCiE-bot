@@ -5,14 +5,14 @@ import { logger } from '../utils/logger';
 import { randomDelay } from '../utils/delay';
 
 /**
- * Syndication APIのレスポンス型
+ * Nitterミラーリスト（生存確認済み）
  */
-interface XSyndicationResponse {
-  id: number;
-  screen_name: string;
-  followers_count: number;
-  statuses_count: number;
-}
+const NITTER_MIRRORS = [
+  'https://nitter.pufe.org',
+  'https://nitter.cz',
+  'https://nitter.poast.org',
+  'https://nitter.projectsegfau.lt',
+];
 
 /**
  * X IDからユーザー名を抽出
@@ -33,7 +33,82 @@ const extractUsername = (idOrUrl: string): string => {
 };
 
 /**
- * Syndication APIを使用してXデータを取得
+ * 数値文字列をパース（カンマ、K、M対応）
+ */
+const parseNumber = (text: string): number => {
+  if (!text) return 0;
+  
+  const cleaned = text.trim().replace(/,/g, '');
+  
+  // K（千）対応
+  if (cleaned.toLowerCase().endsWith('k')) {
+    return Math.round(parseFloat(cleaned.slice(0, -1)) * 1000);
+  }
+  
+  // M（百万）対応
+  if (cleaned.toLowerCase().endsWith('m')) {
+    return Math.round(parseFloat(cleaned.slice(0, -1)) * 1000000);
+  }
+  
+  return parseInt(cleaned, 10) || 0;
+};
+
+/**
+ * Nitterからプロフィールデータを取得
+ */
+const fetchFromNitter = async (
+  username: string,
+  mirror: string
+): Promise<{ tweets: number; followers: number } | null> => {
+  try {
+    const url = `${mirror}/${username}`;
+    logger.info(`  Trying: ${url}`);
+    
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'text/html',
+      },
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeout);
+    
+    if (!response.ok) {
+      logger.warn(`  ${mirror}: HTTP ${response.status}`);
+      return null;
+    }
+    
+    const html = await response.text();
+    
+    // プロフィール統計を抽出（Nitterの構造）
+    // <span class="profile-stat-num">1,234</span>
+    const statMatches = html.match(/<span class="profile-stat-num"[^>]*>([^<]+)<\/span>/g);
+    
+    if (!statMatches || statMatches.length < 3) {
+      logger.warn(`  ${mirror}: Could not find stats`);
+      return null;
+    }
+    
+    // 順序: Tweets, Following, Followers, Likes
+    const tweets = parseNumber(statMatches[0].replace(/<[^>]+>/g, ''));
+    const followers = parseNumber(statMatches[2].replace(/<[^>]+>/g, ''));
+    
+    logger.info(`  ${mirror}: tweets=${tweets}, followers=${followers}`);
+    
+    return { tweets, followers };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.warn(`  ${mirror}: ${message}`);
+    return null;
+  }
+};
+
+/**
+ * Nitterを使用してXデータを取得（フォールバック付き）
  */
 export const scrapeX = async (
   xId: string
@@ -47,82 +122,30 @@ export const scrapeX = async (
     };
   }
 
-  try {
-    logger.info(`Scraping X via Syndication API: ${username}`);
+  logger.info(`Scraping X via Nitter: ${username}`);
+  
+  // 各ミラーを順番に試す
+  for (const mirror of NITTER_MIRRORS) {
+    // レート制限対策
+    await randomDelay(2, 4);
     
-    // レート制限対策で長めに待機（5〜10秒）
-    await randomDelay(5, 10);
+    const result = await fetchFromNitter(username, mirror);
     
-    const url = `https://cdn.syndication.twimg.com/widgets/followbutton/info.json?screen_names=${username}`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'Referer': 'https://platform.twitter.com/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-      },
-    });
-
-    logger.info(`  HTTP Status: ${response.status}`);
-
-    if (response.status === 403) {
-      logger.warn(`  403 Forbidden - IP may be blocked`);
-      return { success: false, error: '403 Forbidden' };
+    if (result) {
+      return {
+        success: true,
+        data: {
+          followers: result.followers,
+          totalPosts: result.tweets,
+        },
+      };
     }
-    
-    if (response.status === 429) {
-      logger.warn(`  429 Too Many Requests - Rate limited`);
-      return { success: false, error: '429 Rate Limited' };
-    }
-    
-    if (response.status === 404) {
-      logger.warn(`  404 Not Found - User may not exist`);
-      return { success: false, error: '404 Not Found' };
-    }
-
-    if (!response.ok) {
-      return { success: false, error: `HTTP ${response.status}` };
-    }
-
-    // レスポンスのテキストを取得して確認
-    const text = await response.text();
-    logger.info(`  Response length: ${text.length} chars`);
-    
-    if (!text || text.length === 0) {
-      logger.warn(`  Empty response for ${username}`);
-      return { success: false, error: 'Empty response' };
-    }
-
-    // JSONパース
-    let data: XSyndicationResponse[];
-    try {
-      data = JSON.parse(text);
-    } catch (parseError) {
-      logger.warn(`  JSON parse failed: ${text.substring(0, 100)}`);
-      return { success: false, error: 'JSON parse failed' };
-    }
-    
-    if (!data || data.length === 0) {
-      logger.warn(`  Empty array for ${username}`);
-      return { success: false, error: 'Empty array' };
-    }
-
-    const userData = data[0];
-    logger.info(`  Success: Followers=${userData.followers_count}, Posts=${userData.statuses_count}`);
-
-    return {
-      success: true,
-      data: {
-        followers: userData.followers_count || 0,
-        totalPosts: userData.statuses_count || 0,
-      },
-    };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    logger.error(`X Syndication API failed for ${username}: ${message}`);
-    return {
-      success: false,
-      error: message,
-    };
   }
+  
+  // 全ミラー失敗
+  logger.error(`All Nitter mirrors failed for ${username}`);
+  return {
+    success: false,
+    error: 'All Nitter mirrors failed',
+  };
 };
