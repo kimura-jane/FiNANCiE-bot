@@ -15,7 +15,7 @@ export async function scrapeFinancie(
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
 
     // ========================================
-    // サポーター数取得: window.NUXT（URL-encode対応）
+    // サポーター数取得: window.NUXT
     // ========================================
     try {
       supporters = await page.evaluate(`
@@ -72,7 +72,6 @@ export async function scrapeFinancie(
       }
     }
 
-    // supporters=0 の警告
     if (supporters === 0) {
       logger.warn(`[Fi] supporters=0 → ${url}`);
     } else {
@@ -88,31 +87,37 @@ export async function scrapeFinancie(
       'a[href*="activity_log"]',
       'a[data-tab="activities"]',
       'a[data-tab="activity"]',
-      'a[data-tab-name="news"]'
+      'a[data-tab-name="news"]',
+      'button[data-tab="activity"]',
+      'button[data-tab="activities"]'
     ].join(', ');
     
     const activityLink = await page.$(activitySelector);
     
     if (activityLink) {
+      // クリックとレスポンス待機を並行
       await Promise.all([
         page.waitForResponse(
-          r => r.url().includes('activit') && r.status() === 200,
+          r => /\/(activities|activity_log)/.test(r.url()) && r.status() === 200,
           { timeout: 10000 }
         ).catch(() => {}),
         activityLink.click()
       ]);
       
-      await page.waitForTimeout(1500);
+      // 時間要素が出るまで待機
+      await page.waitForSelector('time, span.time, span.relative-time, span[class*="relative"]', { timeout: 8000 }).catch(() => {});
+      await page.waitForTimeout(1000);
       logger.info('[Fi] Navigated to activity page');
 
       // ========================================
-      // 無限スクロールで7日分の投稿を取得
+      // 投稿時間を取得
       // ========================================
       const now = Date.now();
       const weekMs = 7 * 24 * 60 * 60 * 1000;
       const seen = new Set<number>();
 
       for (let i = 0; i < 12; i++) {
+        // 方法1: time[datetime] から取得
         const times: string[] = await page.evaluate(`
           Array.from(document.querySelectorAll('time[datetime]'))
             .map(function(e) { return e.getAttribute('datetime'); })
@@ -126,6 +131,38 @@ export async function scrapeFinancie(
           }
         });
 
+        // 方法2: 相対時間表記から取得
+        const relTimes: string[] = await page.evaluate(`
+          Array.from(document.querySelectorAll('span.time, span.relative-time, span[class*="relative"], [class*="time"], [class*="date"]'))
+            .map(function(e) { return e.textContent ? e.textContent.trim() : ''; })
+        `);
+        
+        relTimes.forEach(s => {
+          // 「〇日前」
+          const daysMatch = s.match(/(\d+)日前/);
+          if (daysMatch) {
+            const days = parseInt(daysMatch[1], 10);
+            if (days <= 7) {
+              // 1分単位で丸めて重複防止
+              const ts = Math.floor((now - days * 24 * 60 * 60 * 1000) / 60000) * 60000;
+              seen.add(ts);
+            }
+          }
+          // 「〇時間前」
+          const hoursMatch = s.match(/(\d+)時間前/);
+          if (hoursMatch) {
+            const hours = parseInt(hoursMatch[1], 10);
+            const ts = Math.floor((now - hours * 60 * 60 * 1000) / 60000) * 60000;
+            seen.add(ts);
+          }
+          // 「〇分前」「〇秒前」「たった今」
+          if (s.includes('分前') || s.includes('秒前') || s.includes('たった今')) {
+            const ts = Math.floor(now / 60000) * 60000;
+            seen.add(ts);
+          }
+        });
+
+        // 7日より古い投稿に到達したら終了
         if (seen.size > 0) {
           const oldest = Math.min(...seen);
           if (now - oldest > weekMs) {
@@ -139,39 +176,15 @@ export async function scrapeFinancie(
       }
 
       // ========================================
-      // 相対時間表記のフォールバック
-      // ========================================
-      if (seen.size < 3) {
-        try {
-          const relTimes: string[] = await page.evaluate(`
-            Array.from(document.querySelectorAll('[class*="time"], [class*="date"], [class*="ago"]'))
-              .map(function(e) { return e.textContent ? e.textContent.trim() : ''; })
-          `);
-          
-          relTimes.forEach(s => {
-            const daysMatch = s.match(/(\d+)日前/);
-            if (daysMatch && parseInt(daysMatch[1], 10) <= 6) {
-              seen.add(now - parseInt(daysMatch[1], 10) * 24 * 60 * 60 * 1000);
-            }
-            if (s.includes('時間前') || s.includes('分前') || s.includes('秒前') || s.includes('たった今')) {
-              seen.add(now);
-            }
-          });
-          
-          logger.info(`[Fi] Added relative times, total: ${seen.size}`);
-        } catch {
-          // ignore
-        }
-      }
-
-      // ========================================
       // 7日以内の投稿をカウント
       // ========================================
       const recentPosts = [...seen].filter(t => now - t <= weekMs);
       weekly = recentPosts.length;
 
+      // 最新投稿時間
       if (seen.size > 0) {
-        lastIso = new Date(Math.max(...seen)).toISOString();
+        const latestTs = Math.max(...seen);
+        lastIso = new Date(latestTs).toISOString();
       }
 
       logger.info(`[Fi] Weekly posts: ${weekly}, Last post: ${lastIso}`);
