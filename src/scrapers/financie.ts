@@ -1,154 +1,177 @@
-// src/scrapers/financie.ts
-
 import { Page } from 'playwright';
 import { FinancieMetrics, ScrapeResult } from '../types';
 import { logger } from '../utils/logger';
 import { randomDelay } from '../utils/delay';
 
-const parseNumber = (text: string | null): number => {
+// 数値パース（カンマ対応）
+function parseNumber(text: string | null): number {
   if (!text) return 0;
-  const cleaned = text.replace(/[^0-9]/g, '');
-  return parseInt(cleaned, 10) || 0;
-};
+  const cleaned = text.replace(/[,\s人]/g, '');
+  const num = parseInt(cleaned, 10);
+  return isNaN(num) ? 0 : num;
+}
 
-/**
- * 日付文字列をDateオブジェクトに変換
- */
-const parseDate = (timeText: string): Date | null => {
-  if (!timeText) return null;
-  
-  const text = timeText.trim();
-  const now = new Date();
-  
-  // 「〇秒前」
-  const secMatch = text.match(/(\d+)秒前/);
-  if (secMatch) {
-    return new Date(now.getTime() - parseInt(secMatch[1]) * 1000);
-  }
-  
-  // 「〇分前」
-  const minMatch = text.match(/(\d+)分前/);
-  if (minMatch) {
-    return new Date(now.getTime() - parseInt(minMatch[1]) * 60 * 1000);
-  }
-  
-  // 「〇時間前」
-  const hourMatch = text.match(/(\d+)時間前/);
-  if (hourMatch) {
-    return new Date(now.getTime() - parseInt(hourMatch[1]) * 60 * 60 * 1000);
-  }
-  
-  // 「〇日前」
-  const dayMatch = text.match(/(\d+)日前/);
-  if (dayMatch) {
-    return new Date(now.getTime() - parseInt(dayMatch[1]) * 24 * 60 * 60 * 1000);
-  }
-  
-  // 「たった今」
-  if (text.includes('たった今') || text === '今') {
-    return now;
-  }
-  
-  // 絶対日付形式（例: 2026年01月25日 13:05）
-  const dateMatch = text.match(/(\d{4})年(\d{1,2})月(\d{1,2})日\s*(\d{1,2}):(\d{2})/);
-  if (dateMatch) {
-    const [, year, month, day, hour, minute] = dateMatch;
+// 日付文字列をDateに変換
+function parseJapaneseDate(dateStr: string): Date | null {
+  // "2026年01月27日 18:49" 形式
+  const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日\s*(\d{2}):(\d{2})/);
+  if (match) {
+    const [, year, month, day, hour, minute] = match;
     return new Date(
-      parseInt(year),
-      parseInt(month) - 1,
-      parseInt(day),
-      parseInt(hour),
-      parseInt(minute)
+      parseInt(year, 10),
+      parseInt(month, 10) - 1,
+      parseInt(day, 10),
+      parseInt(hour, 10),
+      parseInt(minute, 10)
     );
   }
   
-  // 日付のみ形式（例: 2026年01月25日）
-  const dateOnlyMatch = text.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
-  if (dateOnlyMatch) {
-    const [, year, month, day] = dateOnlyMatch;
+  // "2026年01月27日" 形式（時間なし）
+  const dateOnly = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+  if (dateOnly) {
+    const [, year, month, day] = dateOnly;
     return new Date(
-      parseInt(year),
-      parseInt(month) - 1,
-      parseInt(day),
-      12, 0, 0
+      parseInt(year, 10),
+      parseInt(month, 10) - 1,
+      parseInt(day, 10)
     );
-  }
-  
-  // ISO形式
-  if (text.match(/^\d{4}-\d{2}-\d{2}/)) {
-    return new Date(text);
   }
   
   return null;
-};
+}
 
-/**
- * 直近7日以内かどうか判定
- */
-const isWithinWeek = (date: Date): boolean => {
+// 直近7日以内かチェック
+function isWithin7Days(dateStr: string): boolean {
   const now = new Date();
-  const weekMs = 7 * 24 * 60 * 60 * 1000;
-  return (now.getTime() - date.getTime()) <= weekMs;
-};
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  
+  // 相対時間形式（「〇〇前」）
+  if (dateStr.includes('秒前') || dateStr.includes('分前') || dateStr.includes('時間前')) {
+    return true;
+  }
+  if (dateStr.includes('たった今') || dateStr.includes('今')) {
+    return true;
+  }
+  
+  // 「1日前」〜「6日前」
+  const daysAgoMatch = dateStr.match(/(\d+)日前/);
+  if (daysAgoMatch) {
+    const days = parseInt(daysAgoMatch[1], 10);
+    return days <= 6;
+  }
+  
+  // 絶対日付形式
+  const postDate = parseJapaneseDate(dateStr);
+  if (postDate) {
+    return postDate >= sevenDaysAgo;
+  }
+  
+  return false;
+}
 
-export const scrapeFinancie = async (
+// window.NUXT からデータ抽出
+function extractFromNuxt(html: string): { supporters: number } | null {
+  const patterns = [
+    /window\.__NUXT__\s*=\s*(\{[\s\S]*?\});/,
+    /window\.NUXT\s*=\s*(\{[\s\S]*?\});/,
+    /__NUXT__\s*=\s*(\{[\s\S]*?\});/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    if (match) {
+      try {
+        let jsonStr = match[1];
+        if (!jsonStr.startsWith('{')) {
+          jsonStr = decodeURIComponent(jsonStr);
+        }
+        
+        const supportersMatch = jsonStr.match(/supporters_count["\s:]+(\d+)/);
+        if (supportersMatch) {
+          return { supporters: parseInt(supportersMatch[1], 10) };
+        }
+      } catch {
+        continue;
+      }
+    }
+  }
+  
+  const supportersRegex = /supporters_count["\s:]+(\d+)/;
+  const match = html.match(supportersRegex);
+  if (match) {
+    return { supporters: parseInt(match[1], 10) };
+  }
+  
+  return null;
+}
+
+export async function scrapeFinancie(
   page: Page,
   url: string
-): Promise<ScrapeResult<FinancieMetrics>> => {
+): Promise<ScrapeResult<FinancieMetrics>> {
   try {
-    logger.info(`Scraping FiNANCiE: ${url}`);
+    logger.info(`Navigating to FiNANCiE: ${url}`);
     
     await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
     await randomDelay(2, 4);
     
+    // サポーター数を取得
+    let supporters = 0;
     const html = await page.content();
     
-    // ========== サポーター数を取得 ==========
-    let supporters = 0;
-    
-    // 方法1: DOMセレクターから取得
-    const selectors = [
-      '.profile_databox .profile_num span span',
-      'div:has-text("サポーター") span',
-      '[class*="supporter"] span',
-      '[class*="member"] span',
-    ];
-    
-    for (const selector of selectors) {
-      try {
-        const el = await page.$(selector);
-        if (el) {
-          const text = await el.textContent();
-          const num = parseNumber(text);
-          if (num > 0) {
-            supporters = num;
-            logger.info(`Found supporters with "${selector}": ${supporters}`);
-            break;
-          }
-        }
-      } catch (e) {
-        // 次のセレクターを試す
-      }
+    // 方法1: NUXT から取得
+    const nuxtData = extractFromNuxt(html);
+    if (nuxtData && nuxtData.supporters > 0) {
+      supporters = nuxtData.supporters;
+      logger.info(`Supporters from NUXT: ${supporters}`);
     }
     
-    // 方法2: テキストマッチング
+    // 方法2: DOM セレクタから取得
     if (supporters === 0) {
-      const match = html.match(/(\d[\d,]*)\s*(メンバー|人|サポーター)/);
-      if (match) {
-        supporters = parseNumber(match[1]);
-        logger.info(`Found supporters from text: ${supporters}`);
+      const selectors = [
+        '.profile_databox .profile_num span span',
+        '.profile-stat-num',
+        '[class*="supporter"] [class*="num"]',
+        '.supporter-count'
+      ];
+      
+      for (const selector of selectors) {
+        try {
+          const element = await page.$(selector);
+          if (element) {
+            const text = await element.textContent();
+            supporters = parseNumber(text);
+            if (supporters > 0) {
+              logger.info(`Supporters from selector "${selector}": ${supporters}`);
+              break;
+            }
+          }
+        } catch {
+          continue;
+        }
       }
     }
-
-    // ========== 活動報告リンクを取得 ==========
-    let activityLogUrl = '';
+    
+    // 方法3: ページ全体から正規表現で取得
+    if (supporters === 0) {
+      const supportersMatch = html.match(/(\d{1,3}(?:,\d{3})*)\s*(?:人|サポーター)/);
+      if (supportersMatch) {
+        supporters = parseNumber(supportersMatch[1]);
+        logger.info(`Supporters from regex: ${supporters}`);
+      }
+    }
+    
+    logger.info(`Final supporters count: ${supporters}`);
+    
+    // アクティビティログURLを探す
+    let activityLogUrl: string | null = null;
     
     const linkSelectors = [
+      'a[data-tab-name="news"]',
       'a[href*="activity_log"]',
       'a[href*="activities"]',
-      'a[href*="activity"]',
-      'a[data-tab-name="news"]',
       'a[data-tab="activities"]',
+      'a[data-tab="news"]'
     ];
     
     for (const selector of linkSelectors) {
@@ -156,117 +179,116 @@ export const scrapeFinancie = async (
         const link = await page.$(selector);
         if (link) {
           const href = await link.getAttribute('href');
-          if (href && (href.includes('activity') || href.includes('news'))) {
+          if (href) {
             activityLogUrl = href.startsWith('http') ? href : `https://financie.jp${href}`;
-            logger.info(`Found activity URL with "${selector}": ${activityLogUrl}`);
+            logger.info(`Activity log URL found: ${activityLogUrl}`);
             break;
           }
         }
-      } catch (e) {
-        // 次のセレクターを試す
+      } catch {
+        continue;
       }
     }
     
+    // HTML内からリンクを探す
     if (!activityLogUrl) {
-      const linkMatch = html.match(/href="([^"]*(?:activity_log|activities|activity)[^"]*)"/);
-      if (linkMatch) {
-        const href = linkMatch[1];
-        activityLogUrl = href.startsWith('http') ? href : `https://financie.jp${href}`;
-        logger.info(`Found activity URL from HTML: ${activityLogUrl}`);
+      const activityMatch = html.match(/href="([^"]*(?:activity_log|activities)[^"]*)"/);
+      if (activityMatch) {
+        activityLogUrl = activityMatch[1].startsWith('http') 
+          ? activityMatch[1] 
+          : `https://financie.jp${activityMatch[1]}`;
+        logger.info(`Activity log URL from HTML: ${activityLogUrl}`);
       }
     }
-
-    // ========== 活動報告ページで投稿を取得 ==========
-    let lastPostTime: string | null = '不明';
+    
+    // アクティビティログページへ移動して週間投稿数を取得
     let weeklyPosts = 0;
+    let lastPostTime: string | null = null;
     
     if (activityLogUrl) {
-      await randomDelay(3, 5);
-      
       try {
+        logger.info(`Navigating to activity log: ${activityLogUrl}`);
         await page.goto(activityLogUrl, { waitUntil: 'networkidle', timeout: 30000 });
         await randomDelay(2, 3);
         
-        const postDates: Date[] = [];
-        
         // スクロールして投稿を読み込む（最大3回）
-        for (let scroll = 0; scroll < 3; scroll++) {
-          // time要素を取得
-          const timeElements = await page.$$('time');
-          
-          for (const timeEl of timeElements) {
-            try {
-              // datetime属性を優先
-              let timeText = await timeEl.getAttribute('datetime');
-              if (!timeText) {
-                timeText = await timeEl.textContent();
-              }
-              
-              if (timeText) {
-                const date = parseDate(timeText.trim());
-                if (date) {
-                  // 重複チェック
-                  const exists = postDates.some(d => 
-                    Math.abs(d.getTime() - date.getTime()) < 60000
-                  );
-                  if (!exists) {
-                    postDates.push(date);
-                  }
-                }
-              }
-            } catch (e) {
-              // 次の要素へ
+        for (let i = 0; i < 3; i++) {
+          await page.evaluate(() => window.scrollBy(0, 1000));
+          await randomDelay(1, 2);
+        }
+        
+        // 投稿の時間を取得
+        const postTimes: string[] = [];
+        const activityHtml = await page.content();
+        
+        // time要素から取得
+        const timeElements = await page.$$('time');
+        for (const el of timeElements) {
+          const datetime = await el.getAttribute('datetime');
+          if (datetime) {
+            postTimes.push(datetime);
+          } else {
+            const text = await el.textContent();
+            if (text && text.trim()) {
+              postTimes.push(text.trim());
             }
           }
+        }
+        
+        // ページ全体から時間パターンを探す
+        if (postTimes.length === 0) {
+          const timePatterns = [
+            /(\d{4}年\d{2}月\d{2}日\s*\d{2}:\d{2})/g,
+            /(\d+(?:秒|分|時間|日)前)/g,
+            /(たった今)/g
+          ];
           
-          // 7日より古い投稿があれば終了
-          const oldestInView = postDates.filter(d => !isWithinWeek(d));
-          if (oldestInView.length > 0) {
-            break;
+          for (const pattern of timePatterns) {
+            const matches = activityHtml.match(pattern);
+            if (matches) {
+              postTimes.push(...matches);
+            }
           }
-          
-          // スクロール
-          await page.mouse.wheel(0, 1200);
-          await randomDelay(0.5, 1);
         }
         
-        // 最新投稿日時
-        if (postDates.length > 0) {
-          postDates.sort((a, b) => b.getTime() - a.getTime());
-          lastPostTime = postDates[0].toISOString().split('T')[0] + ' ' + 
-                         postDates[0].toTimeString().slice(0, 5);
+        logger.info(`Found ${postTimes.length} post times`);
+        
+        // 最新投稿時間を設定
+        if (postTimes.length > 0) {
+          lastPostTime = postTimes[0];
+          logger.info(`Last post time: ${lastPostTime}`);
         }
         
-        // 週間投稿数
-        weeklyPosts = postDates.filter(d => isWithinWeek(d)).length;
+        // 7日以内の投稿をカウント
+        for (const timeStr of postTimes) {
+          if (isWithin7Days(timeStr)) {
+            weeklyPosts++;
+          }
+        }
         
-        logger.info(`Found ${postDates.length} posts, ${weeklyPosts} in last 7 days`);
-        logger.info(`Last post: ${lastPostTime}`);
+        logger.info(`Weekly posts (last 7 days): ${weeklyPosts}`);
         
-      } catch (e) {
-        logger.warn(`Failed to scrape activity log: ${e}`);
+      } catch (activityError) {
+        logger.warn(`Activity log scrape failed: ${activityError}`);
       }
     } else {
       logger.warn('Activity log URL not found');
     }
     
-    logger.info(`FiNANCiE final: supporters=${supporters}, weeklyPosts=${weeklyPosts}, lastPost="${lastPostTime}"`);
-    
     return {
       success: true,
-      data: { 
-        supporters, 
+      data: {
+        supporters,
         weeklyPosts,
-        lastPostTime, 
-      },
+        lastPostTime
+      }
     };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error(`FiNANCiE scrape failed: ${url}`, { error: errorMessage });
     
+  } catch (error) {
+    logger.error(`FiNANCiE scrape failed for ${url}: ${error}`);
     return {
       success: false,
-      error: errorMessage,
+      error: String(error)
     };
   }
-};
+}
