@@ -4,9 +4,6 @@ import { XMetrics, ScrapeResult } from '../types';
 import { logger } from '../utils/logger';
 import { randomDelay } from '../utils/delay';
 
-/**
- * Nitterミラーリスト
- */
 const NITTER_MIRRORS = [
   'https://nitter.privacydev.net',
   'https://nitter.poast.org',
@@ -15,9 +12,6 @@ const NITTER_MIRRORS = [
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-/**
- * X IDからユーザー名を抽出
- */
 const extractUsername = (idOrUrl: string): string => {
   let username = idOrUrl.trim();
   
@@ -32,9 +26,6 @@ const extractUsername = (idOrUrl: string): string => {
   return username;
 };
 
-/**
- * タグと特殊スペースを除去
- */
 const strip = (s: string): string => {
   return s
     .replace(/<[^>]+>/g, '')
@@ -45,9 +36,6 @@ const strip = (s: string): string => {
     .trim();
 };
 
-/**
- * 数値をパース（K、M対応）
- */
 const parseNumber = (text: string): number => {
   const cleaned = strip(text).toLowerCase();
   
@@ -61,9 +49,6 @@ const parseNumber = (text: string): number => {
   return parseInt(cleaned, 10) || 0;
 };
 
-/**
- * Syndication APIから取得（先に試す）
- */
 const fetchFromSyndication = async (
   username: string
 ): Promise<{ tweets: number; followers: number } | null> => {
@@ -79,12 +64,16 @@ const fetchFromSyndication = async (
       },
     });
     
+    logger.info(`  Syndication HTTP: ${response.status}`);
+    
     if (!response.ok) {
       logger.warn(`  Syndication: HTTP ${response.status}`);
       return null;
     }
     
     const text = await response.text();
+    logger.info(`  Syndication response length: ${text.length}`);
+    
     if (!text || text.length === 0) {
       logger.warn(`  Syndication: Empty response`);
       return null;
@@ -116,9 +105,6 @@ const fetchFromSyndication = async (
   }
 };
 
-/**
- * Nitterから取得（フォールバック）
- */
 const fetchFromNitter = async (
   username: string,
   mirror: string
@@ -148,7 +134,8 @@ const fetchFromNitter = async (
     
     const stats: Record<string, number> = {};
     
-    const liPattern = /<li class="([^"]+)"[^>]*>[\s\S]*?<span class="profile-stat-num"[^>]*>([\s\S]*?)<\/span>/gi;
+    // 修正: profile-stat-num と profile-stat-value 両対応
+    const liPattern = /<li class="([^"]+)"[^>]*>[\s\S]*?<span class="profile-stat-(?:num|value)"[^>]*>([\s\S]*?)<\/span>/gi;
     let match;
     
     while ((match = liPattern.exec(html)) !== null) {
@@ -160,7 +147,8 @@ const fetchFromNitter = async (
     }
     
     if (Object.keys(stats).length === 0) {
-      const numPattern = /<span class="profile-stat-num"[^>]*>([\s\S]*?)<\/span>/gi;
+      // 修正: profile-stat-num と profile-stat-value 両対応
+      const numPattern = /<span class="profile-stat-(?:num|value)"[^>]*>([\s\S]*?)<\/span>/gi;
       const numbers: number[] = [];
       
       while ((match = numPattern.exec(html)) !== null) {
@@ -194,9 +182,6 @@ const fetchFromNitter = async (
   }
 };
 
-/**
- * Xデータを取得（Syndication → Nitter の順）
- */
 export const scrapeX = async (
   xId: string
 ): Promise<ScrapeResult<XMetrics>> => {
@@ -208,6 +193,7 @@ export const scrapeX = async (
   
   logger.info(`Scraping X: ${username}`);
   
+  // ① Syndication API を先に試す
   const viaSynd = await fetchFromSyndication(username);
   if (viaSynd) {
     return {
@@ -219,6 +205,7 @@ export const scrapeX = async (
     };
   }
   
+  // ② Nitter を試す
   for (const mirror of NITTER_MIRRORS) {
     await randomDelay(1, 3);
     const viaNitter = await fetchFromNitter(username, mirror);
