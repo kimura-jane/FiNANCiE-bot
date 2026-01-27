@@ -72,14 +72,47 @@
     .rank {
       font-weight: bold;
       font-size: 1.2rem;
+      width: 50px;
     }
     
     .rank-1 { color: #ffd700; }
     .rank-2 { color: #c0c0c0; }
     .rank-3 { color: #cd7f32; }
     
-    .name {
+    .name-cell {
+      min-width: 200px;
+    }
+    
+    .community-name {
       font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .links {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .links a {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    
+    .links a:hover {
+      opacity: 0.8;
+    }
+    
+    .link-financie {
+      background: #00d4ff;
+      color: #000;
+    }
+    
+    .link-x {
+      background: #333;
+      color: #fff;
     }
     
     .supporters {
@@ -117,7 +150,7 @@
     }
     
     .bar-name {
-      width: 120px;
+      width: 150px;
       font-size: 0.8rem;
       text-align: right;
       white-space: nowrap;
@@ -150,7 +183,12 @@
       }
       
       .bar-name {
-        width: 80px;
+        width: 100px;
+      }
+      
+      .links a {
+        font-size: 0.7rem;
+        padding: 2px 6px;
       }
     }
   </style>
@@ -166,7 +204,7 @@
       <thead>
         <tr>
           <th>順位</th>
-          <th>名前</th>
+          <th>コミュニティ名</th>
           <th>サポーター数</th>
           <th>週間投稿</th>
           <th>最終投稿</th>
@@ -192,15 +230,27 @@
         document.getElementById('lastUpdated').textContent = data.updated || '-';
         
         const tbody = document.getElementById('rankingBody');
-        tbody.innerHTML = data.ranking.map((item, i) => `
-          <tr>
-            <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
-            <td class="name">${item.name}</td>
-            <td class="supporters">${item.supporters.toLocaleString()}</td>
-            <td class="weekly">${item.weeklyPosts}</td>
-            <td>${item.lastPost || '-'}</td>
-          </tr>
-        `).join('');
+        tbody.innerHTML = data.ranking.map((item, i) => {
+          const financieLink = item.financieUrl 
+            ? `<a href="${item.financieUrl}" target="_blank" class="link-financie">FiNANCiE</a>` 
+            : '';
+          const xLink = item.xId 
+            ? `<a href="https://x.com/${item.xId.replace('@', '')}" target="_blank" class="link-x">𝕏</a>` 
+            : '';
+          
+          return `
+            <tr>
+              <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
+              <td class="name-cell">
+                <div class="community-name">${item.name}</div>
+                <div class="links">${financieLink}${xLink}</div>
+              </td>
+              <td class="supporters">${item.supporters.toLocaleString()}</td>
+              <td class="weekly">${item.weeklyPosts}</td>
+              <td>${item.lastPost || '-'}</td>
+            </tr>
+          `;
+        }).join('');
         
         const maxSupporters = Math.max(...data.ranking.map(r => r.supporters));
         const chart = document.getElementById('barChart');
