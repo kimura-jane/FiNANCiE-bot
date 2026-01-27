@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { launchBrowser, createContext, closeBrowser } from './utils/browser';
 import { scrapeFinancie } from './scrapers/financie';
 import { SheetsClient } from './sheets/client';
@@ -67,7 +69,6 @@ async function main(): Promise<void> {
       };
       
       if (owner.financieUrl) {
-        // 各オーナーごとに新しいページを作成
         const page = await context.newPage();
         
         try {
@@ -86,7 +87,6 @@ async function main(): Promise<void> {
             logger.warn(`Using yesterday's data for ${owner.name}`);
           }
         } finally {
-          // 必ずページを閉じる
           await page.close();
         }
       }
@@ -120,10 +120,35 @@ async function main(): Promise<void> {
     await sheets.appendHistory(todayMetrics);
     await sheets.updateRanking(scoredMetrics);
 
+    // サポーター数でソート（ランキング用）
+    const sorted = [...scoredMetrics].sort((a, b) => b.financie.supporters - a.financie.supporters);
+
+    // JSON出力（GitHub Pages用）
+    const rankingData = {
+      updated: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }),
+      ranking: sorted.map(m => ({
+        name: m.name,
+        supporters: m.financie.supporters,
+        weeklyPosts: m.financie.weeklyPosts,
+        lastPost: m.financie.lastPostTime 
+          ? m.financie.lastPostTime.split('T')[0] 
+          : null
+      }))
+    };
+    
+    const docsDir = path.join(process.cwd(), 'docs', 'data');
+    if (!fs.existsSync(docsDir)) {
+      fs.mkdirSync(docsDir, { recursive: true });
+    }
+    fs.writeFileSync(
+      path.join(docsDir, 'ranking.json'),
+      JSON.stringify(rankingData, null, 2)
+    );
+    logger.info('Exported ranking.json for GitHub Pages');
+
     logger.info('\n=== Results Summary ===');
-    const sorted = [...scoredMetrics].sort((a, b) => b.score - a.score);
     sorted.slice(0, 10).forEach((m, i) => {
-      logger.info(`${i + 1}. ${m.name}: ${m.score} pts (weekly=${m.financie.weeklyPosts}, supporters=${m.financie.supporters})`);
+      logger.info(`${i + 1}. ${m.name}: ${m.financie.supporters} supporters (weekly=${m.financie.weeklyPosts})`);
     });
 
     logger.info('\n=== Process Completed ===');
