@@ -145,7 +145,7 @@
       color: #fff;
     }
     
-    .supporters {
+    .followers {
       color: #00d4ff;
       font-weight: bold;
       text-align: center;
@@ -378,7 +378,7 @@
           <th colspan="2" class="group-x">𝕏</th>
         </tr>
         <tr class="header-sub">
-          <th class="group-financie">サポーター</th>
+          <th class="group-financie">フォロワー</th>
           <th class="group-financie">週間投稿</th>
           <th class="group-x">フォロワー</th>
           <th class="group-x">投稿数</th>
@@ -399,7 +399,7 @@
       </div>
       
       <div class="chart-tabs">
-        <button class="chart-tab active" data-type="supporters">サポーター</button>
+        <button class="chart-tab active" data-type="supporters">FiNANCiEフォロワー</button>
         <button class="chart-tab x-tab" data-type="xFollowers">Xフォロワー</button>
       </div>
       
@@ -428,7 +428,6 @@
     
     // Xデータが入力済みかどうかを判定
     function hasXData(item) {
-      // xTotalDays > 0 なら入力済み（x_updatedが2回以上ある）
       return item.xTotalDays > 0;
     }
     
@@ -449,10 +448,8 @@
             : '';
           const chartLink = `<a class="link-chart" onclick="openChart('${item.name.replace(/'/g, "\\'")}')">📈推移</a>`;
           
-          // Xデータが入力済みかチェック
           const xDataExists = hasXData(item);
           
-          // X一日平均フォロワーの表示
           let xFollowersAvgHtml = '';
           if (xDataExists && item.xAvgFollowersPerDay !== 0) {
             const sign = item.xAvgFollowersPerDay >= 0 ? '+' : '';
@@ -460,7 +457,6 @@
             xFollowersAvgHtml = `<div class="x-avg ${cssClass}">${sign}${item.xAvgFollowersPerDay}/日</div>`;
           }
           
-          // X一日平均ポストの表示
           let xPostsAvgHtml = '';
           if (xDataExists && item.xAvgPostsPerDay !== 0) {
             const sign = item.xAvgPostsPerDay >= 0 ? '+' : '';
@@ -474,7 +470,7 @@
                 <div class="community-name">${item.name}</div>
                 <div class="links">${financieLink}${xLink}${chartLink}</div>
               </td>
-              <td class="supporters">${item.supporters.toLocaleString()}</td>
+              <td class="followers">${item.supporters.toLocaleString()}</td>
               <td class="weekly">${item.weeklyPosts}</td>
               <td class="x-data">
                 ${xDataExists ? item.xFollowers.toLocaleString() : '-'}
@@ -546,7 +542,6 @@
           </div>
         `;
       } else {
-        // Xフォロワー
         const xHistory = rankingData.xHistory?.[currentName] || [];
         if (xHistory.length > 0) {
           const latest = xHistory[xHistory.length - 1];
@@ -605,7 +600,7 @@
       if (currentType === 'supporters') {
         data = rankingData.history[currentName] || [];
         valueKey = 'supporters';
-        label = 'サポーター数';
+        label = 'フォロワー数';
         color = '#00d4ff';
       } else {
         data = rankingData.xHistory?.[currentName] || [];
