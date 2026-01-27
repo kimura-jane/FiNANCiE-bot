@@ -18,26 +18,31 @@ export async function scrapeFinancie(
     // サポーター数取得: window.NUXT（URL-encode対応）
     // ========================================
     try {
-      await page.addScriptTag({
-        content: `
-          window.__DUMP__ = (function(){
-            const raw = window.__NUXT__ || window.NUXT;
-            if (typeof raw === 'string') {
-              try { return JSON.parse(decodeURIComponent(raw)); }
-              catch(e) { return {}; }
-            }
-            return raw || {};
-          })();
-        `
+      // ブラウザ側で NUXT データを取得
+      supporters = await page.evaluate(() => {
+        const w = window as any;
+        let raw = w.__NUXT__ || w.NUXT;
+        
+        // URL-encode されている場合はデコード
+        if (typeof raw === 'string') {
+          try {
+            raw = JSON.parse(decodeURIComponent(raw));
+          } catch {
+            return 0;
+          }
+        }
+        
+        if (!raw) return 0;
+        
+        // 複数のパスを試す
+        return (
+          raw?.state?.owner?.supporters_count ??
+          raw?.data?.[0]?.owner?.supporters_count ??
+          raw?.state?.community?.supporters_count ??
+          raw?.payload?.owner?.supporters_count ??
+          0
+        );
       });
-      
-      const dump = await page.evaluate(() => (window as any).__DUMP__);
-      supporters = 
-        dump?.state?.owner?.supporters_count ??
-        dump?.data?.[0]?.owner?.supporters_count ??
-        dump?.state?.community?.supporters_count ??
-        dump?.payload?.owner?.supporters_count ??
-        0;
       
       if (supporters > 0) {
         logger.info(`[Fi] Supporters from NUXT: ${supporters}`);
@@ -166,7 +171,7 @@ export async function scrapeFinancie(
             }
           });
           
-          logger.info(`[Fi] Added ${relTimes.length} relative times`);
+          logger.info(`[Fi] Added relative times, total: ${seen.size}`);
         } catch {
           // ignore
         }
