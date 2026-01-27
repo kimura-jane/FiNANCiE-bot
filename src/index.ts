@@ -7,10 +7,6 @@ import { randomDelay } from './utils/delay';
 import { logger } from './utils/logger';
 import { DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics, Owner } from './types';
 
-/**
- * スコア計算（FiNANCiEのみ）
- * Score = (週間投稿数 × 30) + (Δサポーター × 10)
- */
 const calculateScore = (
   current: DailyMetrics,
   yesterday: DailyMetrics | undefined
@@ -61,7 +57,6 @@ async function main(): Promise<void> {
       
       const yesterday = yesterdayMetrics.get(owner.name);
       
-      // FiNANCiEからデータ取得
       let financieData: FinancieMetrics = { 
         supporters: 0, 
         weeklyPosts: 0,
@@ -91,7 +86,6 @@ async function main(): Promise<void> {
         }
       }
 
-      // Xは手動入力なので、前日データを継承
       let xData: XMetrics = { followers: 0, totalPosts: 0 };
       if (yesterday) {
         xData = yesterday.x;
@@ -120,10 +114,19 @@ async function main(): Promise<void> {
     await sheets.appendHistory(todayMetrics);
     await sheets.updateRanking(scoredMetrics);
 
-    // サポーター数でソート（ランキング用）
+    // 全履歴を取得
+    const allHistory = await sheets.getAllHistory();
+
+    // サポーター数でソート
     const sorted = [...scoredMetrics].sort((a, b) => b.financie.supporters - a.financie.supporters);
 
-    // JSON出力（GitHub Pages用）
+    // 履歴データを整形
+    const historyData: { [key: string]: Array<{ date: string; supporters: number }> } = {};
+    for (const [name, history] of allHistory) {
+      historyData[name] = history;
+    }
+
+    // JSON出力
     const rankingData = {
       updated: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }),
       ranking: sorted.map(m => {
@@ -138,7 +141,8 @@ async function main(): Promise<void> {
           financieUrl: owner?.financieUrl || null,
           xId: owner?.xId || null
         };
-      })
+      }),
+      history: historyData
     };
     
     const docsDir = path.join(process.cwd(), 'docs', 'data');
