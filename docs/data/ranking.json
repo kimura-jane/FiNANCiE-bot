@@ -1,155 +1,205 @@
 {
-  "updated": "2026/1/27 22:50:47",
+  "updated": "2026/1/27 23:16:53",
   "ranking": [
     {
       "name": "篠塚康介@ベーシックインカムプロジェクト",
       "supporters": 863,
       "weeklyPosts": 0,
-      "lastPost": "2025-12-03"
+      "lastPost": "2025-12-03",
+      "financieUrl": "https://financie.jp/users/sinosukedesu",
+      "xId": "@sinosukedesu"
     },
     {
       "name": "お米トークン",
       "supporters": 758,
       "weeklyPosts": 6,
-      "lastPost": "2026-01-27"
+      "lastPost": "2026-01-27",
+      "financieUrl": "https://financie.jp/users/okometoken",
+      "xId": "@okometoken"
     },
     {
       "name": "Nest",
       "supporters": 725,
       "weeklyPosts": 7,
-      "lastPost": "2026-01-27"
+      "lastPost": "2026-01-27",
+      "financieUrl": "https://financie.jp/users/purchaseunit_tracking-nest_advance_a",
+      "xId": "@PurchaseUnit"
     },
     {
       "name": "Web3キッチンカープロジェクト",
       "supporters": 694,
       "weeklyPosts": 0,
-      "lastPost": "2026-01-18"
+      "lastPost": "2026-01-18",
+      "financieUrl": "https://financie.jp/users/cryptoninjakitchencar",
+      "xId": "@ryos50161232"
     },
     {
       "name": "サトルトークン",
       "supporters": 339,
       "weeklyPosts": 3,
-      "lastPost": "2026-01-26"
+      "lastPost": "2026-01-26",
+      "financieUrl": "https://financie.jp/users/cryptoninjachildren_meme_satoru",
+      "xId": "@ninjachildren"
     },
     {
       "name": "essan",
       "supporters": 258,
       "weeklyPosts": 3,
-      "lastPost": "2026-01-25"
+      "lastPost": "2026-01-25",
+      "financieUrl": "https://financie.jp/users/essan",
+      "xId": "@essan11"
     },
     {
       "name": "ハヤシモン",
       "supporters": 188,
       "weeklyPosts": 3,
-      "lastPost": "2026-01-27"
+      "lastPost": "2026-01-27",
+      "financieUrl": "https://financie.jp/users/hayashimon",
+      "xId": "@hayashimon1"
     },
     {
       "name": "お好み焼きB",
       "supporters": 185,
       "weeklyPosts": 0,
-      "lastPost": "2025-11-20"
+      "lastPost": "2025-11-20",
+      "financieUrl": "https://financie.jp/users/okonomiyakib",
+      "xId": "@okonomiyakib"
     },
     {
       "name": "あけじまD",
       "supporters": 180,
       "weeklyPosts": 0,
-      "lastPost": "2025-12-17"
+      "lastPost": "2025-12-17",
+      "financieUrl": "https://financie.jp/users/akezima_d",
+      "xId": "@akezima_d"
     },
     {
       "name": "音夢パンダ",
       "supporters": 163,
       "weeklyPosts": 1,
-      "lastPost": "2026-01-23"
+      "lastPost": "2026-01-23",
+      "financieUrl": "https://financie.jp/users/Otoyume_Panda",
+      "xId": "@Otoyume_Panda"
     },
     {
       "name": "ジョイントーレ先生",
       "supporters": 109,
       "weeklyPosts": 1,
-      "lastPost": "2026-01-25"
+      "lastPost": "2026-01-25",
+      "financieUrl": "https://financie.jp/users/jointre",
+      "xId": "@jointre_teacher"
     },
     {
       "name": "映画制作/大河内奏至",
       "supporters": 104,
       "weeklyPosts": 2,
-      "lastPost": "2026-01-24"
+      "lastPost": "2026-01-24",
+      "financieUrl": "https://financie.jp/users/s_o",
+      "xId": "@s_okochi"
     },
     {
       "name": "春日部、本庄、深谷、北本ダンススクール",
       "supporters": 103,
       "weeklyPosts": 2,
-      "lastPost": "2026-01-23"
+      "lastPost": "2026-01-23",
+      "financieUrl": "https://financie.jp/users/danceschool2525",
+      "xId": "@danceschool2525"
     },
     {
       "name": "CROW Maker",
       "supporters": 96,
       "weeklyPosts": 0,
-      "lastPost": null
+      "lastPost": null,
+      "financieUrl": "https://financie.jp/users/o2a5aa51a3d1d4b03acace461e648897b",
+      "xId": "@CrowMaker_"
     },
     {
       "name": "Ryo",
       "supporters": 63,
       "weeklyPosts": 0,
-      "lastPost": "2025-12-06"
+      "lastPost": "2025-12-06",
+      "financieUrl": "https://financie.jp/users/ryok7312",
+      "xId": "@ryok7312"
     },
     {
       "name": "夢結び工房",
       "supporters": 48,
       "weeklyPosts": 0,
-      "lastPost": "2025-11-13"
+      "lastPost": "2025-11-13",
+      "financieUrl": "https://financie.jp/users/YumeMusubiKobo",
+      "xId": "@yumemusubi_kobo"
     },
     {
       "name": "ぬりえ",
       "supporters": 48,
       "weeklyPosts": 0,
-      "lastPost": "2025-11-29"
+      "lastPost": "2025-11-29",
+      "financieUrl": "https://financie.jp/users/kazumaono",
+      "xId": "@kazumaono"
     },
     {
       "name": "BeAR DAO",
       "supporters": 42,
       "weeklyPosts": 0,
-      "lastPost": "2026-01-06"
+      "lastPost": "2026-01-06",
+      "financieUrl": "https://financie.jp/users/BeAR_DAO_esports",
+      "xId": "@BeAR_DAO"
     },
     {
       "name": "ぽぽたん音楽隊",
       "supporters": 39,
       "weeklyPosts": 0,
-      "lastPost": "2026-01-15"
+      "lastPost": "2026-01-15",
+      "financieUrl": "https://financie.jp/users/vf4791babdd334d609a0758c66944ba3f",
+      "xId": "@popotanband "
     },
     {
       "name": "The collective",
       "supporters": 35,
       "weeklyPosts": 1,
-      "lastPost": "2026-01-24"
+      "lastPost": "2026-01-24",
+      "financieUrl": "https://financie.jp/users/gb7e0b11574424b818718585bd5c845e8",
+      "xId": "@ThecollectiveJP"
     },
     {
       "name": "TRONファンクラブ",
       "supporters": 33,
       "weeklyPosts": 2,
-      "lastPost": "2026-01-23"
+      "lastPost": "2026-01-23",
+      "financieUrl": "https://financie.jp/users/Bass_Sun_TRON",
+      "xId": "@financie_tron"
     },
     {
       "name": "DREAMTIME",
       "supporters": 28,
       "weeklyPosts": 0,
-      "lastPost": "2025-12-18"
+      "lastPost": "2025-12-18",
+      "financieUrl": "https://financie.jp/users/sd0c8d5dacdab49f69bec3acb25e8189c",
+      "xId": "@Dreamtime_IP"
     },
     {
       "name": "おきおぢ",
       "supporters": 24,
       "weeklyPosts": 0,
-      "lastPost": null
+      "lastPost": null,
+      "financieUrl": "https://financie.jp/users/zdff64f470f244eab90d3a8dec5032ac8",
+      "xId": "@oki_odi_okinawa"
     },
     {
       "name": "HIP HUB",
       "supporters": 21,
       "weeklyPosts": 0,
-      "lastPost": null
+      "lastPost": null,
+      "financieUrl": "https://financie.jp/users/vd006c54474714347b931976e9f0d4f44",
+      "xId": "@Hiphub_official"
     },
     {
       "name": "エミねぇ",
       "supporters": 6,
       "weeklyPosts": 0,
-      "lastPost": null
+      "lastPost": null,
+      "financieUrl": "https://financie.jp/users/j35bb72aa7e1b4498be768d666f238753",
+      "xId": "@eminee_financie"
     }
   ]
 }
