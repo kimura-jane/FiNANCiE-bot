@@ -35,6 +35,14 @@ jobs:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: npm start
 
+      - name: Commit and push ranking data
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/
+          git diff --staged --quiet || git commit -m "Update ranking data [skip ci]"
+          git push
+
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
