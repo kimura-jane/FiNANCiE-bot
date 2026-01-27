@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FiNANCiE オーナーランキング</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * {
       margin: 0;
@@ -53,7 +54,7 @@
     
     .ranking-table th,
     .ranking-table td {
-      padding: 15px 12px;
+      padding: 12px 10px;
       text-align: left;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
@@ -80,25 +81,27 @@
     .rank-3 { color: #cd7f32; }
     
     .name-cell {
-      min-width: 200px;
+      min-width: 180px;
     }
     
     .community-name {
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     
     .links {
       display: flex;
-      gap: 8px;
+      gap: 6px;
+      flex-wrap: wrap;
     }
     
     .links a {
-      font-size: 0.75rem;
-      padding: 2px 8px;
+      font-size: 0.7rem;
+      padding: 3px 8px;
       border-radius: 4px;
       text-decoration: none;
       transition: opacity 0.2s;
+      cursor: pointer;
     }
     
     .links a:hover {
@@ -115,6 +118,11 @@
       color: #fff;
     }
     
+    .link-chart {
+      background: #7b2fff;
+      color: #fff;
+    }
+    
     .supporters {
       color: #00d4ff;
       font-weight: bold;
@@ -124,71 +132,112 @@
       color: #7b2fff;
     }
     
-    .chart-container {
-      margin-top: 40px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    
-    .chart-title {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-      color: #fff;
-    }
-    
-    .bar-chart {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .bar-row {
-      display: flex;
+    /* モーダル */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
       align-items: center;
-      gap: 10px;
     }
     
-    .bar-name {
-      width: 150px;
-      font-size: 0.8rem;
-      text-align: right;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .modal-overlay.active {
+      display: flex;
     }
     
-    .bar {
-      height: 24px;
-      background: linear-gradient(90deg, #00d4ff, #7b2fff);
-      border-radius: 4px;
-      transition: width 0.5s ease;
+    .modal {
+      background: #1a1a2e;
+      border-radius: 16px;
+      padding: 24px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     
-    .bar-value {
-      font-size: 0.8rem;
-      color: #aaa;
-      min-width: 50px;
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    
+    .modal-close:hover {
+      opacity: 0.7;
+    }
+    
+    .period-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .period-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .period-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .period-btn.active {
+      background: #7b2fff;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+    
+    .no-data {
+      text-align: center;
+      color: #888;
+      padding: 40px;
     }
     
     @media (max-width: 600px) {
       .ranking-table th,
       .ranking-table td {
-        padding: 10px 8px;
-        font-size: 0.85rem;
+        padding: 8px 6px;
+        font-size: 0.8rem;
       }
       
       h1 {
         font-size: 1.5rem;
       }
       
-      .bar-name {
-        width: 100px;
+      .links a {
+        font-size: 0.65rem;
+        padding: 2px 6px;
       }
       
-      .links a {
-        font-size: 0.7rem;
-        padding: 2px 6px;
+      .modal {
+        padding: 16px;
       }
     }
   </style>
@@ -204,7 +253,7 @@
       <thead>
         <tr>
           <th>順位</th>
-          <th>コミュニティ名</th>
+          <th>コミュニティ</th>
           <th>サポーター数</th>
           <th>週間投稿</th>
           <th>最終投稿</th>
@@ -214,36 +263,58 @@
         <tr><td colspan="5" style="text-align:center;">読み込み中...</td></tr>
       </tbody>
     </table>
-    
-    <div class="chart-container">
-      <h2 class="chart-title">📊 サポーター数グラフ</h2>
-      <div class="bar-chart" id="barChart"></div>
+  </div>
+  
+  <!-- モーダル -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="modalTitle">サポーター推移</span>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+      <div class="period-buttons">
+        <button class="period-btn active" data-period="1W">1W</button>
+        <button class="period-btn" data-period="1M">1M</button>
+        <button class="period-btn" data-period="1Y">1Y</button>
+        <button class="period-btn" data-period="ALL">ALL</button>
+      </div>
+      <div class="chart-container">
+        <canvas id="supporterChart"></canvas>
+      </div>
+      <div class="no-data" id="noData" style="display:none;">
+        データがありません
+      </div>
     </div>
   </div>
   
   <script>
+    let rankingData = null;
+    let currentChart = null;
+    let currentName = null;
+    
     async function loadRanking() {
       try {
         const response = await fetch('data/ranking.json');
-        const data = await response.json();
+        rankingData = await response.json();
         
-        document.getElementById('lastUpdated').textContent = data.updated || '-';
+        document.getElementById('lastUpdated').textContent = rankingData.updated || '-';
         
         const tbody = document.getElementById('rankingBody');
-        tbody.innerHTML = data.ranking.map((item, i) => {
+        tbody.innerHTML = rankingData.ranking.map((item, i) => {
           const financieLink = item.financieUrl 
             ? `<a href="${item.financieUrl}" target="_blank" class="link-financie">FiNANCiE</a>` 
             : '';
           const xLink = item.xId 
             ? `<a href="https://x.com/${item.xId.replace('@', '')}" target="_blank" class="link-x">𝕏</a>` 
             : '';
+          const chartLink = `<a class="link-chart" onclick="openChart('${item.name.replace(/'/g, "\\'")}')">📈推移</a>`;
           
           return `
             <tr>
               <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
               <td class="name-cell">
                 <div class="community-name">${item.name}</div>
-                <div class="links">${financieLink}${xLink}</div>
+                <div class="links">${financieLink}${xLink}${chartLink}</div>
               </td>
               <td class="supporters">${item.supporters.toLocaleString()}</td>
               <td class="weekly">${item.weeklyPosts}</td>
@@ -252,16 +323,6 @@
           `;
         }).join('');
         
-        const maxSupporters = Math.max(...data.ranking.map(r => r.supporters));
-        const chart = document.getElementById('barChart');
-        chart.innerHTML = data.ranking.slice(0, 15).map(item => `
-          <div class="bar-row">
-            <span class="bar-name">${item.name}</span>
-            <div class="bar" style="width: ${(item.supporters / maxSupporters) * 100}%"></div>
-            <span class="bar-value">${item.supporters.toLocaleString()}</span>
-          </div>
-        `).join('');
-        
       } catch (error) {
         console.error('データの読み込みに失敗:', error);
         document.getElementById('rankingBody').innerHTML = 
@@ -269,6 +330,147 @@
       }
     }
     
+    function openChart(name) {
+      currentName = name;
+      document.getElementById('modalTitle').textContent = name + ' - サポーター推移';
+      document.getElementById('modalOverlay').classList.add('active');
+      
+      // デフォルトは1W
+      document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector('.period-btn[data-period="1W"]').classList.add('active');
+      
+      renderChart('1W');
+    }
+    
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      if (currentChart) {
+        currentChart.destroy();
+        currentChart = null;
+      }
+    }
+    
+    function filterDataByPeriod(data, period) {
+      if (!data || data.length === 0) return [];
+      
+      const now = new Date();
+      let cutoff;
+      
+      switch (period) {
+        case '1W':
+          cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case '1M':
+          cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        case '1Y':
+          cutoff = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+          break;
+        case 'ALL':
+        default:
+          return data;
+      }
+      
+      return data.filter(d => new Date(d.date) >= cutoff);
+    }
+    
+    function renderChart(period) {
+      const history = rankingData.history[currentName];
+      const filteredData = filterDataByPeriod(history, period);
+      
+      const canvas = document.getElementById('supporterChart');
+      const noData = document.getElementById('noData');
+      
+      if (currentChart) {
+        currentChart.destroy();
+      }
+      
+      if (!filteredData || filteredData.length === 0) {
+        canvas.style.display = 'none';
+        noData.style.display = 'block';
+        return;
+      }
+      
+      canvas.style.display = 'block';
+      noData.style.display = 'none';
+      
+      const labels = filteredData.map(d => {
+        const date = new Date(d.date);
+        return `${date.getMonth() + 1}/${date.getDate()}`;
+      });
+      const values = filteredData.map(d => d.supporters);
+      
+      currentChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'サポーター数',
+            data: values,
+            borderColor: '#00d4ff',
+            backgroundColor: 'rgba(0, 212, 255, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: filteredData.length > 30 ? 0 : 4,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.parsed.y.toLocaleString() + ' 人';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: '#888',
+                maxTicksLimit: 10
+              }
+            },
+            y: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: '#888',
+                callback: function(value) {
+                  return value.toLocaleString();
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // イベントリスナー
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+    
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        renderChart(this.dataset.period);
+      });
+    });
+    
+    // 初期化
     loadRanking();
   </script>
 </body>
