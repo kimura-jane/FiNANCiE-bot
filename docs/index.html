@@ -389,6 +389,12 @@
     let currentName = null;
     let currentType = 'supporters';
     
+    // Xデータが入力済みかどうかを判定
+    function hasXData(item) {
+      // xTotalDays > 0 なら入力済み（x_updatedがある）
+      return item.xTotalDays > 0;
+    }
+    
     async function loadRanking() {
       try {
         const response = await fetch('data/ranking.json');
@@ -406,17 +412,22 @@
             : '';
           const chartLink = `<a class="link-chart" onclick="openChart('${item.name.replace(/'/g, "\\'")}')">📈推移</a>`;
           
-          // X一日平均の表示
-          let xAvgHtml = '';
-          if (item.xAvgFollowersPerDay && item.xTotalDays > 0) {
+          // Xデータが入力済みかチェック
+          const xDataExists = hasXData(item);
+          
+          // X一日平均フォロワーの表示
+          let xFollowersAvgHtml = '';
+          if (xDataExists && item.xAvgFollowersPerDay !== 0) {
             const sign = item.xAvgFollowersPerDay >= 0 ? '+' : '';
             const cssClass = item.xAvgFollowersPerDay >= 0 ? '' : 'negative';
-            xAvgHtml = `<div class="x-avg ${cssClass}">${sign}${item.xAvgFollowersPerDay}/日</div>`;
+            xFollowersAvgHtml = `<div class="x-avg ${cssClass}">${sign}${item.xAvgFollowersPerDay}/日</div>`;
           }
           
+          // X一日平均ポストの表示
           let xPostsAvgHtml = '';
-          if (item.xAvgPostsPerDay && item.xTotalDays > 0) {
-            xPostsAvgHtml = `<div class="x-avg">${item.xAvgPostsPerDay}/日</div>`;
+          if (xDataExists && item.xAvgPostsPerDay !== 0) {
+            const sign = item.xAvgPostsPerDay >= 0 ? '+' : '';
+            xPostsAvgHtml = `<div class="x-avg">${sign}${item.xAvgPostsPerDay}/日</div>`;
           }
           
           return `
@@ -429,11 +440,11 @@
               <td class="supporters">${item.supporters.toLocaleString()}</td>
               <td class="weekly">${item.weeklyPosts}</td>
               <td class="x-data">
-                ${item.xFollowers ? item.xFollowers.toLocaleString() : '-'}
-                ${xAvgHtml}
+                ${xDataExists ? item.xFollowers.toLocaleString() : '-'}
+                ${xFollowersAvgHtml}
               </td>
               <td class="x-data">
-                ${item.xPosts ? item.xPosts.toLocaleString() : '-'}
+                ${xDataExists ? item.xPosts.toLocaleString() : '-'}
                 ${xPostsAvgHtml}
               </td>
             </tr>
@@ -522,7 +533,7 @@
             </div>
           `;
         } else {
-          summary.innerHTML = '<div class="stat-box"><div class="stat-label">Xデータなし</div></div>';
+          summary.innerHTML = '<div class="stat-box"><div class="stat-label">Xデータ未入力</div></div>';
         }
       }
     }
