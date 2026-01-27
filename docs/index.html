@@ -71,6 +71,27 @@
       background: rgba(255, 255, 255, 0.05);
     }
     
+    .header-group th {
+      text-align: center;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .header-sub th {
+      font-size: 0.75rem;
+      padding: 8px 6px;
+      text-align: center;
+    }
+    
+    .group-financie {
+      background: rgba(0, 212, 255, 0.15) !important;
+      color: #00d4ff !important;
+    }
+    
+    .group-x {
+      background: rgba(120, 120, 120, 0.15) !important;
+      color: #aaa !important;
+    }
+    
     .rank {
       font-weight: bold;
       font-size: 1.2rem;
@@ -127,19 +148,22 @@
     .supporters {
       color: #00d4ff;
       font-weight: bold;
+      text-align: center;
     }
     
     .weekly {
       color: #7b2fff;
+      text-align: center;
     }
     
     .x-data {
       color: #aaa;
       font-size: 0.85rem;
+      text-align: center;
     }
     
     .x-avg {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #4ade80;
     }
     
@@ -303,7 +327,7 @@
       .ranking-table th,
       .ranking-table td {
         padding: 8px 4px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
       }
       
       h1 {
@@ -320,11 +344,16 @@
       }
       
       .x-data {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
       }
       
       .x-avg {
+        font-size: 0.6rem;
+      }
+      
+      .header-sub th {
         font-size: 0.65rem;
+        padding: 6px 3px;
       }
     }
   </style>
@@ -338,13 +367,17 @@
     
     <table class="ranking-table">
       <thead>
-        <tr>
-          <th>順位</th>
-          <th>コミュニティ</th>
-          <th>サポーター</th>
-          <th>週間投稿</th>
-          <th>Xフォロワー</th>
-          <th>X投稿数</th>
+        <tr class="header-group">
+          <th rowspan="2">順位</th>
+          <th rowspan="2">コミュニティ</th>
+          <th colspan="2" class="group-financie">FiNANCiE</th>
+          <th colspan="2" class="group-x">𝕏</th>
+        </tr>
+        <tr class="header-sub">
+          <th class="group-financie">サポーター</th>
+          <th class="group-financie">週間投稿</th>
+          <th class="group-x">フォロワー</th>
+          <th class="group-x">投稿数</th>
         </tr>
       </thead>
       <tbody id="rankingBody">
@@ -391,7 +424,7 @@
     
     // Xデータが入力済みかどうかを判定
     function hasXData(item) {
-      // xTotalDays > 0 なら入力済み（x_updatedがある）
+      // xTotalDays > 0 なら入力済み（x_updatedが2回以上ある）
       return item.xTotalDays > 0;
     }
     
