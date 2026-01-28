@@ -4,6 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FiNANCiEオーナーチャレンジ フォロワーランキング</title>
+  
+  <!-- OGP -->
+  <meta property="og:title" content="FiNANCiEオーナーチャレンジ フォロワーランキング">
+  <meta property="og:description" content="FiNANCiEオーナーチャレンジ参加者のフォロワー数・週間投稿数ランキング">
+  <meta property="og:image" content="https://financie-oc.pages.dev/IMG_4141.jpeg">
+  <meta property="og:url" content="https://financie-oc.pages.dev">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="FiNANCiEオーナーチャレンジ">
+  <meta property="og:locale" content="ja_JP">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FiNANCiEオーナーチャレンジ フォロワーランキング">
+  <meta name="twitter:description" content="FiNANCiEオーナーチャレンジ参加者のフォロワー数・週間投稿数ランキング">
+  <meta name="twitter:image" content="https://financie-oc.pages.dev/IMG_4141.jpeg">
+  
+  <!-- その他メタ -->
+  <meta name="description" content="FiNANCiEオーナーチャレンジ参加者のフォロワー数・週間投稿数ランキング">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * {
@@ -426,7 +446,6 @@
     let currentName = null;
     let currentType = 'supporters';
     
-    // Xデータが入力済みかどうかを判定
     function hasXData(item) {
       return item.xTotalDays > 0;
     }
