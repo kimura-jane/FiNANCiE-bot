@@ -1,5 +1,5 @@
 {
-  "updated": "2026/1/29 9:45:50",
+  "updated": "2026/1/29 9:55:28",
   "ranking": [
     {
       "name": "篠塚康介@ベーシックインカムプロジェクト",
@@ -216,10 +216,10 @@
       "lastPost": "2025-11-29",
       "financieUrl": "https://financie.jp/users/kazumaono",
       "xId": "@kazumaono_",
-      "xFollowers": 0,
-      "xPosts": 0,
-      "xAvgFollowersPerDay": -2727,
-      "xAvgPostsPerDay": -25804,
+      "xFollowers": 25805,
+      "xPosts": 2728,
+      "xAvgFollowersPerDay": 23078,
+      "xAvgPostsPerDay": -23076,
       "xTotalDays": 1
     },
     {
@@ -256,9 +256,9 @@
       "financieUrl": "https://financie.jp/users/Bass_Sun_TRON",
       "xId": "@bass_sun_trx",
       "xFollowers": 1073,
-      "xPosts": 9772,
+      "xPosts": 9272,
       "xAvgFollowersPerDay": -1,
-      "xAvgPostsPerDay": 509,
+      "xAvgPostsPerDay": 9,
       "xTotalDays": 1
     },
     {
@@ -394,6 +394,10 @@
       {
         "date": "2026-01-29",
         "supporters": 28
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 28
       }
     ],
     "TRONファンクラブ": [
@@ -436,6 +440,10 @@
       {
         "date": "2026-01-29",
         "supporters": 36
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 36
       }
     ],
     "ぽぽたん音楽隊": [
@@ -461,6 +469,10 @@
       },
       {
         "date": "2026-01-28",
+        "supporters": 39
+      },
+      {
+        "date": "2026-01-29",
         "supporters": 39
       },
       {
@@ -520,6 +532,10 @@
       {
         "date": "2026-01-29",
         "supporters": 22
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 22
       }
     ],
     "ハヤシモン": [
@@ -546,6 +562,10 @@
       {
         "date": "2026-01-28",
         "supporters": 188
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 189
       },
       {
         "date": "2026-01-29",
@@ -604,6 +624,10 @@
       {
         "date": "2026-01-29",
         "supporters": 64
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 64
       }
     ],
     "essan": [
@@ -646,6 +670,10 @@
       {
         "date": "2026-01-29",
         "supporters": 262
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 262
       }
     ],
     "CROW Maker": [
@@ -671,6 +699,10 @@
       },
       {
         "date": "2026-01-28",
+        "supporters": 96
+      },
+      {
+        "date": "2026-01-29",
         "supporters": 96
       },
       {
@@ -730,6 +762,10 @@
       {
         "date": "2026-01-29",
         "supporters": 35
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 35
       }
     ],
     "ジョイントーレ先生": [
@@ -756,6 +792,10 @@
       {
         "date": "2026-01-28",
         "supporters": 109
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 110
       },
       {
         "date": "2026-01-29",
@@ -814,6 +854,10 @@
       {
         "date": "2026-01-29",
         "supporters": 105
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 105
       }
     ],
     "お好み焼きB": [
@@ -840,6 +884,10 @@
       {
         "date": "2026-01-28",
         "supporters": 185
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 190
       },
       {
         "date": "2026-01-29",
@@ -898,6 +946,10 @@
       {
         "date": "2026-01-29",
         "supporters": 49
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 49
       }
     ],
     "あけじまD": [
@@ -923,6 +975,10 @@
       },
       {
         "date": "2026-01-28",
+        "supporters": 180
+      },
+      {
+        "date": "2026-01-29",
         "supporters": 180
       },
       {
@@ -982,6 +1038,10 @@
       {
         "date": "2026-01-29",
         "supporters": 48
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 48
       }
     ],
     "音夢パンダ": [
@@ -1007,6 +1067,10 @@
       },
       {
         "date": "2026-01-28",
+        "supporters": 163
+      },
+      {
+        "date": "2026-01-29",
         "supporters": 163
       },
       {
@@ -1066,6 +1130,10 @@
       {
         "date": "2026-01-29",
         "supporters": 44
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 44
       }
     ],
     "お米トークン": [
@@ -1092,6 +1160,10 @@
       {
         "date": "2026-01-28",
         "supporters": 758
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 759
       },
       {
         "date": "2026-01-29",
@@ -1150,6 +1222,10 @@
       {
         "date": "2026-01-29",
         "supporters": 7
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 7
       }
     ],
     "おきおぢ": [
@@ -1192,6 +1268,10 @@
       {
         "date": "2026-01-29",
         "supporters": 25
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 25
       }
     ],
     "Nest": [
@@ -1217,6 +1297,10 @@
       },
       {
         "date": "2026-01-28",
+        "supporters": 725
+      },
+      {
+        "date": "2026-01-29",
         "supporters": 725
       },
       {
@@ -1276,6 +1360,10 @@
       {
         "date": "2026-01-29",
         "supporters": 104
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 104
       }
     ],
     "Web3キッチンカープロジェクト": [
@@ -1301,6 +1389,10 @@
       },
       {
         "date": "2026-01-28",
+        "supporters": 694
+      },
+      {
+        "date": "2026-01-29",
         "supporters": 694
       },
       {
@@ -1360,6 +1452,10 @@
       {
         "date": "2026-01-29",
         "supporters": 339
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 339
       }
     ],
     "篠塚康介@ベーシックインカムプロジェクト": [
@@ -1402,6 +1498,10 @@
       {
         "date": "2026-01-29",
         "supporters": 865
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 865
       }
     ],
     "ART WITH ME": [
@@ -1428,6 +1528,10 @@
       {
         "date": "2026-01-29",
         "supporters": 18
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 18
       }
     ],
     "SEKITOBA": [
@@ -1438,6 +1542,10 @@
       {
         "date": "2026-01-28",
         "supporters": 15
+      },
+      {
+        "date": "2026-01-29",
+        "supporters": 16
       },
       {
         "date": "2026-01-29",
@@ -1494,7 +1602,7 @@
       {
         "date": "2026-01-29",
         "followers": 1073,
-        "posts": 9772,
+        "posts": 9272,
         "updatedAt": "2026-1-29"
       }
     ],
@@ -1753,8 +1861,8 @@
       },
       {
         "date": "2026-01-29",
-        "followers": 0,
-        "posts": 0,
+        "followers": 25805,
+        "posts": 2728,
         "updatedAt": "2026-1-29"
       }
     ],
