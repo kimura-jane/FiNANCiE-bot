@@ -176,6 +176,12 @@
       text-align: center;
     }
     
+    .last-post {
+      color: #888;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+    
     .x-data {
       color: #aaa;
       font-size: 0.85rem;
@@ -185,10 +191,6 @@
     .x-avg {
       font-size: 0.7rem;
       color: #4ade80;
-    }
-    
-    .x-avg.negative {
-      color: #f87171;
     }
     
     /* モーダル */
@@ -379,6 +381,10 @@
         font-size: 0.65rem;
         padding: 6px 3px;
       }
+      
+      .last-post {
+        font-size: 0.7rem;
+      }
     }
   </style>
 </head>
@@ -394,18 +400,19 @@
         <tr class="header-group">
           <th rowspan="2">順位</th>
           <th rowspan="2">コミュニティ</th>
-          <th colspan="2" class="group-financie">FiNANCiE</th>
+          <th colspan="3" class="group-financie">FiNANCiE</th>
           <th colspan="2" class="group-x">𝕏</th>
         </tr>
         <tr class="header-sub">
           <th class="group-financie">フォロワー</th>
           <th class="group-financie">週間投稿</th>
+          <th class="group-financie">最終投稿</th>
           <th class="group-x">フォロワー</th>
-          <th class="group-x">投稿数</th>
+          <th class="group-x">総ポスト数(日Avg)</th>
         </tr>
       </thead>
       <tbody id="rankingBody">
-        <tr><td colspan="6" style="text-align:center;">読み込み中...</td></tr>
+        <tr><td colspan="7" style="text-align:center;">読み込み中...</td></tr>
       </tbody>
     </table>
   </div>
@@ -450,6 +457,13 @@
       return item.xTotalDays > 0;
     }
     
+    function formatLastPost(lastPost) {
+      if (!lastPost) return '-';
+      const date = new Date(lastPost);
+      if (isNaN(date.getTime())) return '-';
+      return `${date.getMonth() + 1}/${date.getDate()}`;
+    }
+    
     async function loadRanking() {
       try {
         const response = await fetch('data/ranking.json');
@@ -469,17 +483,14 @@
           
           const xDataExists = hasXData(item);
           
-          let xFollowersAvgHtml = '';
-          if (xDataExists && item.xAvgFollowersPerDay !== 0) {
-            const sign = item.xAvgFollowersPerDay >= 0 ? '+' : '';
-            const cssClass = item.xAvgFollowersPerDay >= 0 ? '' : 'negative';
-            xFollowersAvgHtml = `<div class="x-avg ${cssClass}">${sign}${item.xAvgFollowersPerDay}/日</div>`;
-          }
-          
-          let xPostsAvgHtml = '';
-          if (xDataExists && item.xAvgPostsPerDay !== 0) {
-            const sign = item.xAvgPostsPerDay >= 0 ? '+' : '';
-            xPostsAvgHtml = `<div class="x-avg">${sign}${item.xAvgPostsPerDay}/日</div>`;
+          // X投稿数の日平均表示
+          let xPostsDisplay = '-';
+          if (xDataExists) {
+            xPostsDisplay = item.xPosts.toLocaleString();
+            if (item.xAvgPostsPerDay && item.xAvgPostsPerDay !== 0) {
+              const sign = item.xAvgPostsPerDay >= 0 ? '+' : '';
+              xPostsDisplay += ` <span class="x-avg">(${sign}${item.xAvgPostsPerDay}/日)</span>`;
+            }
           }
           
           return `
@@ -491,14 +502,9 @@
               </td>
               <td class="followers">${item.supporters.toLocaleString()}</td>
               <td class="weekly">${item.weeklyPosts}</td>
-              <td class="x-data">
-                ${xDataExists ? item.xFollowers.toLocaleString() : '-'}
-                ${xFollowersAvgHtml}
-              </td>
-              <td class="x-data">
-                ${xDataExists ? item.xPosts.toLocaleString() : '-'}
-                ${xPostsAvgHtml}
-              </td>
+              <td class="last-post">${formatLastPost(item.lastPost)}</td>
+              <td class="x-data">${xDataExists ? item.xFollowers.toLocaleString() : '-'}</td>
+              <td class="x-data">${xPostsDisplay}</td>
             </tr>
           `;
         }).join('');
@@ -506,7 +512,7 @@
       } catch (error) {
         console.error('データの読み込みに失敗:', error);
         document.getElementById('rankingBody').innerHTML = 
-          '<tr><td colspan="6" style="text-align:center;color:#ff6b6b;">データの読み込みに失敗しました</td></tr>';
+          '<tr><td colspan="7" style="text-align:center;color:#ff6b6b;">データの読み込みに失敗しました</td></tr>';
       }
     }
     
