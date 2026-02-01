@@ -1,5 +1,5 @@
 {
-  "updated": "2026/2/1 0:24:53",
+  "updated": "2026/2/2 0:25:42",
   "ranking": [
     {
       "name": "篠塚康介@ベーシックインカムプロジェクト",
@@ -18,7 +18,7 @@
       "name": "お米トークン",
       "supporters": 759,
       "weeklyPosts": 7,
-      "lastPost": "2026-01-30",
+      "lastPost": "2026-02-01",
       "financieUrl": "https://financie.jp/users/okometoken",
       "xId": "@katsuramukiokan",
       "xFollowers": 1407,
@@ -29,9 +29,9 @@
     },
     {
       "name": "Nest",
-      "supporters": 724,
-      "weeklyPosts": 5,
-      "lastPost": "2026-01-30",
+      "supporters": 723,
+      "weeklyPosts": 6,
+      "lastPost": "2026-02-01",
       "financieUrl": "https://financie.jp/users/purchaseunit_tracking-nest_advance_a",
       "xId": "@cat_man0311",
       "xFollowers": 1097,
@@ -69,7 +69,7 @@
     {
       "name": "essan",
       "supporters": 264,
-      "weeklyPosts": 4,
+      "weeklyPosts": 3,
       "lastPost": "2026-01-30",
       "financieUrl": "https://financie.jp/users/essan",
       "xId": "@essan_",
@@ -94,8 +94,8 @@
     },
     {
       "name": "ハヤシモン",
-      "supporters": 189,
-      "weeklyPosts": 4,
+      "supporters": 188,
+      "weeklyPosts": 3,
       "lastPost": "2026-01-31",
       "financieUrl": "https://financie.jp/users/hayashimon",
       "xId": "@hayashimon1",
@@ -134,7 +134,7 @@
     {
       "name": "ジョイントーレ先生",
       "supporters": 111,
-      "weeklyPosts": 1,
+      "weeklyPosts": 0,
       "lastPost": "2026-01-25",
       "financieUrl": "https://financie.jp/users/jointre",
       "xId": "@jointre_sensei",
@@ -147,7 +147,7 @@
     {
       "name": "映画制作/大河内奏至",
       "supporters": 104,
-      "weeklyPosts": 2,
+      "weeklyPosts": 1,
       "lastPost": "2026-01-28",
       "financieUrl": "https://financie.jp/users/s_o",
       "xId": "@soushi1029",
@@ -160,8 +160,8 @@
     {
       "name": "春日部、本庄、深谷、北本ダンススクール",
       "supporters": 104,
-      "weeklyPosts": 2,
-      "lastPost": "2026-01-30",
+      "weeklyPosts": 4,
+      "lastPost": "2026-02-01",
       "financieUrl": "https://financie.jp/users/danceschool2525",
       "xId": "@danceschool2525",
       "xFollowers": 38,
@@ -430,6 +430,10 @@
       {
         "date": "2026-02-01",
         "supporters": 28
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 28
       }
     ],
     "TRONファンクラブ": [
@@ -507,6 +511,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 36
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 36
       }
     ],
@@ -586,6 +594,10 @@
       {
         "date": "2026-02-01",
         "supporters": 39
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 39
       }
     ],
     "HIP HUB": [
@@ -663,6 +675,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 23
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 23
       }
     ],
@@ -742,6 +758,10 @@
       {
         "date": "2026-02-01",
         "supporters": 189
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 188
       }
     ],
     "Ryo": [
@@ -819,6 +839,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 64
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 64
       }
     ],
@@ -898,6 +922,10 @@
       {
         "date": "2026-02-01",
         "supporters": 264
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 264
       }
     ],
     "CROW Maker": [
@@ -975,6 +1003,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 96
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 96
       }
     ],
@@ -1054,6 +1086,10 @@
       {
         "date": "2026-02-01",
         "supporters": 35
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 35
       }
     ],
     "ジョイントーレ先生": [
@@ -1131,6 +1167,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 111
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 111
       }
     ],
@@ -1210,6 +1250,10 @@
       {
         "date": "2026-02-01",
         "supporters": 104
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 104
       }
     ],
     "お好み焼きB": [
@@ -1287,6 +1331,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 190
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 190
       }
     ],
@@ -1366,6 +1414,10 @@
       {
         "date": "2026-02-01",
         "supporters": 50
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 50
       }
     ],
     "あけじまD": [
@@ -1443,6 +1495,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 180
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 180
       }
     ],
@@ -1522,6 +1578,10 @@
       {
         "date": "2026-02-01",
         "supporters": 49
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 49
       }
     ],
     "音夢パンダ": [
@@ -1599,6 +1659,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 164
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 164
       }
     ],
@@ -1678,6 +1742,10 @@
       {
         "date": "2026-02-01",
         "supporters": 44
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 44
       }
     ],
     "お米トークン": [
@@ -1755,6 +1823,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 759
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 759
       }
     ],
@@ -1834,6 +1906,10 @@
       {
         "date": "2026-02-01",
         "supporters": 7
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 7
       }
     ],
     "おきおぢ": [
@@ -1911,6 +1987,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 25
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 25
       }
     ],
@@ -1990,6 +2070,10 @@
       {
         "date": "2026-02-01",
         "supporters": 724
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 723
       }
     ],
     "春日部、本庄、深谷、北本ダンススクール": [
@@ -2067,6 +2151,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 104
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 104
       }
     ],
@@ -2146,6 +2234,10 @@
       {
         "date": "2026-02-01",
         "supporters": 695
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 695
       }
     ],
     "サトルトークン": [
@@ -2223,6 +2315,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 339
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 339
       }
     ],
@@ -2302,6 +2398,10 @@
       {
         "date": "2026-02-01",
         "supporters": 865
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 865
       }
     ],
     "ART WITH ME": [
@@ -2364,6 +2464,10 @@
       {
         "date": "2026-02-01",
         "supporters": 18
+      },
+      {
+        "date": "2026-02-02",
+        "supporters": 18
       }
     ],
     "SEKITOBA": [
@@ -2425,6 +2529,10 @@
       },
       {
         "date": "2026-02-01",
+        "supporters": 17
+      },
+      {
+        "date": "2026-02-02",
         "supporters": 17
       }
     ]
