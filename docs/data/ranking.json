@@ -1,5 +1,5 @@
 {
-  "updated": "2026/2/2 19:32:44",
+  "updated": "2026/2/2 19:43:55",
   "ranking": [
     {
       "name": "篠塚康介@ベーシックインカムプロジェクト",
@@ -9,7 +9,7 @@
       "financieUrl": "https://financie.jp/users/sinosukedesu",
       "xId": "@sinosukedesu",
       "xFollowers": 15674,
-      "xPosts": 0,
+      "xPosts": 17736,
       "xAvgFollowersPerDay": -0.67,
       "xAvgPostsPerDay": 0,
       "xTotalDays": 3
@@ -281,11 +281,11 @@
       "lastPost": "2025-12-18",
       "financieUrl": "https://financie.jp/users/sd0c8d5dacdab49f69bec3acb25e8189c",
       "xId": "@Dreamtimeinc",
-      "xFollowers": 0,
-      "xPosts": 0,
-      "xAvgFollowersPerDay": -1.4,
-      "xAvgPostsPerDay": -1.6,
-      "xTotalDays": 5
+      "xFollowers": 7,
+      "xPosts": 8,
+      "xAvgFollowersPerDay": 0,
+      "xAvgPostsPerDay": 0,
+      "xTotalDays": 2
     },
     {
       "name": "おきおぢ",
@@ -422,10 +422,6 @@
       {
         "date": "2026-02-02",
         "supporters": 28
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 28
       }
     ],
     "TRONファンクラブ": [
@@ -491,10 +487,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 36
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 36
       },
       {
@@ -570,10 +562,6 @@
       {
         "date": "2026-02-02",
         "supporters": 39
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 39
       }
     ],
     "HIP HUB": [
@@ -640,10 +628,6 @@
       {
         "date": "2026-01-31",
         "supporters": 22
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 23
       },
       {
         "date": "2026-02-02",
@@ -718,10 +702,6 @@
       {
         "date": "2026-02-02",
         "supporters": 188
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 188
       }
     ],
     "Ryo": [
@@ -788,10 +768,6 @@
       {
         "date": "2026-01-31",
         "supporters": 63
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 64
       },
       {
         "date": "2026-02-02",
@@ -866,10 +842,6 @@
       {
         "date": "2026-02-02",
         "supporters": 263
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 263
       }
     ],
     "CROW Maker": [
@@ -935,10 +907,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 96
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 96
       },
       {
@@ -1014,10 +982,6 @@
       {
         "date": "2026-02-02",
         "supporters": 35
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 35
       }
     ],
     "ジョイントーレ先生": [
@@ -1083,10 +1047,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 111
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 111
       },
       {
@@ -1162,10 +1122,6 @@
       {
         "date": "2026-02-02",
         "supporters": 104
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 104
       }
     ],
     "お好み焼きB": [
@@ -1231,10 +1187,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 190
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 190
       },
       {
@@ -1310,10 +1262,6 @@
       {
         "date": "2026-02-02",
         "supporters": 50
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 50
       }
     ],
     "あけじまD": [
@@ -1379,10 +1327,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 180
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 180
       },
       {
@@ -1458,10 +1402,6 @@
       {
         "date": "2026-02-02",
         "supporters": 49
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 49
       }
     ],
     "音夢パンダ": [
@@ -1527,10 +1467,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 164
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 164
       },
       {
@@ -1606,10 +1542,6 @@
       {
         "date": "2026-02-02",
         "supporters": 44
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 44
       }
     ],
     "お米トークン": [
@@ -1675,10 +1607,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 759
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 759
       },
       {
@@ -1754,10 +1682,6 @@
       {
         "date": "2026-02-02",
         "supporters": 7
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 7
       }
     ],
     "おきおぢ": [
@@ -1823,10 +1747,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 25
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 25
       },
       {
@@ -1902,10 +1822,6 @@
       {
         "date": "2026-02-02",
         "supporters": 723
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 723
       }
     ],
     "春日部、本庄、深谷、北本ダンススクール": [
@@ -1976,10 +1892,6 @@
       {
         "date": "2026-02-02",
         "supporters": 104
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 104
       }
     ],
     "Web3キッチンカープロジェクト": [
@@ -2045,10 +1957,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 695
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 695
       },
       {
@@ -2124,10 +2032,6 @@
       {
         "date": "2026-02-02",
         "supporters": 339
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 339
       }
     ],
     "篠塚康介@ベーシックインカムプロジェクト": [
@@ -2198,10 +2102,6 @@
       {
         "date": "2026-02-02",
         "supporters": 865
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 865
       }
     ],
     "ART WITH ME": [
@@ -2251,10 +2151,6 @@
       },
       {
         "date": "2026-01-31",
-        "supporters": 18
-      },
-      {
-        "date": "2026-02-02",
         "supporters": 18
       },
       {
@@ -2314,10 +2210,6 @@
       {
         "date": "2026-02-02",
         "supporters": 17
-      },
-      {
-        "date": "2026-02-02",
-        "supporters": 17
       }
     ]
   },
@@ -2337,9 +2229,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 7,
+        "posts": 8,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2352,12 +2244,6 @@
         "followers": 7,
         "posts": 8,
         "updatedAt": "2026-1-30"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-2-2"
       }
     ],
     "TRONファンクラブ": [
@@ -2375,15 +2261,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 1074,
+        "posts": 9299,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2416,12 +2296,6 @@
         "followers": 32,
         "posts": 55,
         "updatedAt": "2026-01-28"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
       },
       {
         "date": "2026-02-02",
@@ -2463,15 +2337,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 144,
+        "posts": 386,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2507,15 +2375,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 3281,
+        "posts": 16052,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2551,15 +2413,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 2336,
+        "posts": 7606,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2595,15 +2451,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 18321,
+        "posts": 279850,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2639,15 +2489,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 465,
+        "posts": 738,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2683,15 +2527,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 137,
+        "posts": 4297,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2727,15 +2565,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 195,
+        "posts": 476,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2771,15 +2603,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 344,
+        "posts": 81,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2815,15 +2641,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 1226,
+        "posts": 9019,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2859,15 +2679,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 24,
+        "posts": 37,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2903,15 +2717,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 6315,
+        "posts": 23474,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2947,15 +2755,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 2727,
+        "posts": 25815,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -2991,15 +2793,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 760,
+        "posts": 13893,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3035,15 +2831,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 737,
+        "posts": 1268,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3079,15 +2869,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 1420,
+        "posts": 2087,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3123,15 +2907,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 1876,
+        "posts": 8755,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3167,15 +2945,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 4166,
+        "posts": 8606,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3211,15 +2983,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 1099,
+        "posts": 6291,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3255,15 +3021,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 36,
+        "posts": 60,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3299,15 +3059,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 2106,
+        "posts": 10686,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3343,15 +3097,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 1333,
+        "posts": 1750,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3387,15 +3135,9 @@
       },
       {
         "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
+        "followers": 15669,
+        "posts": 17736,
+        "updatedAt": "2026-02-02T10:39:11.444Z"
       },
       {
         "date": "2026-01-29",
@@ -3424,12 +3166,6 @@
         "updatedAt": "2026-02-02"
       },
       {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
-      {
         "date": "2026-01-29",
         "followers": 0,
         "posts": 0,
@@ -3449,12 +3185,6 @@
       }
     ],
     "SEKITOBA": [
-      {
-        "date": "2026-02-02",
-        "followers": 0,
-        "posts": 0,
-        "updatedAt": "2026-02-02"
-      },
       {
         "date": "2026-02-02",
         "followers": 0,
