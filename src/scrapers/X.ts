@@ -3,36 +3,26 @@ import { XMetrics } from '../types';
 import { logger } from '../utils/logger';
 
 /**
- * X API v2 (Pay-per-use) を使用して一括取得する
- * コスト: 1リクエストにつき $0.005 (約0.75円) 固定
+ * X API v2 一括取得用スクレイパー
  */
 export async function fetchXMetricsBatch(
   usernames: string[],
   bearerToken: string
 ): Promise<Map<string, XMetrics>> {
   const metricsMap = new Map<string, XMetrics>();
-  
-  if (!usernames || usernames.length === 0) {
-    logger.warn('[X] 有効なX IDが見つかりません。取得をスキップします。');
-    return metricsMap;
-  }
+  if (usernames.length === 0) return metricsMap;
 
-  // IDから@を除去してカンマ区切りにする (最大100件まで1リクエストでOK)
-  const cleanUsernames = usernames
-    .map(u => u.replace(/[@＠]/g, '').trim())
-    .filter(u => u !== "")
-    .join(',');
-
+  // @を除去してカンマ区切りにする
+  const cleanUsernames = usernames.map(u => u.replace(/[@＠]/g, '').trim()).join(',');
   const url = `https://api.twitter.com/2/users/by?usernames=${encodeURIComponent(cleanUsernames)}&user.fields=public_metrics`;
 
   try {
-    logger.info(`[X] ${usernames.length}名分のデータを一括取得中...`);
     const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${bearerToken}` }
     });
 
-    const now = new Date().toISOString();
     const data = response.data.data;
+    const now = new Date().toISOString();
 
     if (data && Array.isArray(data)) {
       data.forEach((user: any) => {
@@ -42,14 +32,11 @@ export async function fetchXMetricsBatch(
           updatedAt: now
         });
       });
-      logger.info(`[X] 取得成功。消費クレジット: $0.005`);
-    } else {
-      logger.warn('[X] ユーザーデータが返されませんでした。APIの残高か設定を確認してください。');
+      logger.info(`[X] ${data.length}名分の一括取得に成功しました。`);
     }
-
     return metricsMap;
   } catch (error: any) {
-    logger.error(`[X] APIエラー: ${error.response?.data?.title || error.message}`);
+    logger.error(`[X] APIエラー: ${error.message}`);
     return metricsMap;
   }
 }
