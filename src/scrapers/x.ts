@@ -1,35 +1,55 @@
-// src/scrapers/X.ts からインポート
-import { fetchXMetricsBatch } from './scrapers/X';
+import axios from 'axios';
+import { XMetrics } from '../types';
+import { logger } from '../utils/logger';
 
-async function main() {
-  const sheets = new SheetsClient();
-  const owners = await sheets.getOwners();
+/**
+ * X API v2 (Pay-per-use) を使用して一括取得する
+ * コスト: 1リクエストにつき $0.005 (約0.75円) 固定
+ */
+export async function fetchXMetricsBatch(
+  usernames: string[],
+  bearerToken: string
+): Promise<Map<string, XMetrics>> {
+  const metricsMap = new Map<string, XMetrics>();
   
-  // --- 1. Xデータを「一括」で取得 (消費: 0.75円) ---
-  const xIds = owners.map(o => o.xId).filter((id): id is string => !!id);
-  // GitHub ActionsのSecretsに X_BEARER_TOKEN を追加しておく
-  const xMetricsMap = await fetchXMetricsBatch(xIds, process.env.X_BEARER_TOKEN!);
-
-  const dailyMetrics: DailyMetrics[] = [];
-
-  // --- 2. 各オーナーのループ ---
-  for (const owner of owners) {
-    // FiNANCiEのスクレイピング (既存の処理)
-    const fResult = await scrapeFinancie(page, owner.financieUrl!);
-    
-    // Xのデータをマップから取り出す (APIは叩かないのでタダ)
-    const xKey = owner.xId?.replace('@', '').toLowerCase() || '';
-    const xData = xMetricsMap.get(xKey) || { followers: 0, totalPosts: 0, updatedAt: null };
-
-    dailyMetrics.push({
-      date: sheets.getTodayDate(),
-      name: owner.name,
-      financie: fResult.data,
-      x: xData // ここでXのデータが統合される
-    });
+  if (!usernames || usernames.length === 0) {
+    logger.warn('[X] 有効なX IDが見つかりません。取得をスキップします。');
+    return metricsMap;
   }
 
-  // --- 3. スプシへの記録とJSONの書き出し ---
-  await sheets.appendHistory(dailyMetrics);
-  // ここで書き出す ranking.json にも xFollowers, xPosts を含めるように修正
+  // IDから@を除去してカンマ区切りにする (最大100件まで1リクエストでOK)
+  const cleanUsernames = usernames
+    .map(u => u.replace(/[@＠]/g, '').trim())
+    .filter(u => u !== "")
+    .join(',');
+
+  const url = `https://api.twitter.com/2/users/by?usernames=${encodeURIComponent(cleanUsernames)}&user.fields=public_metrics`;
+
+  try {
+    logger.info(`[X] ${usernames.length}名分のデータを一括取得中...`);
+    const response = await axios.get(url, {
+      headers: { Authorization: `Bearer ${bearerToken}` }
+    });
+
+    const now = new Date().toISOString();
+    const data = response.data.data;
+
+    if (data && Array.isArray(data)) {
+      data.forEach((user: any) => {
+        metricsMap.set(user.username.toLowerCase(), {
+          followers: user.public_metrics.followers_count,
+          totalPosts: user.public_metrics.tweet_count,
+          updatedAt: now
+        });
+      });
+      logger.info(`[X] 取得成功。消費クレジット: $0.005`);
+    } else {
+      logger.warn('[X] ユーザーデータが返されませんでした。APIの残高か設定を確認してください。');
+    }
+
+    return metricsMap;
+  } catch (error: any) {
+    logger.error(`[X] APIエラー: ${error.response?.data?.title || error.message}`);
+    return metricsMap;
+  }
 }
