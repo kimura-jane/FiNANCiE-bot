@@ -1,3 +1,5 @@
+// src/sheets/client.ts
+
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { Owner, DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics } from '../types';
@@ -118,7 +120,6 @@ export class SheetsClient {
     return metricsMap;
   }
 
-  // 全履歴を取得（X履歴も含む）
   async getAllHistory(): Promise<Map<string, Array<{ 
     date: string; 
     supporters: number;
@@ -159,7 +160,6 @@ export class SheetsClient {
       historyMap.get(name)!.push({ date, supporters, xFollowers, xPosts, xUpdated });
     }
 
-    // 日付順にソート
     for (const [name, history] of historyMap) {
       history.sort((a, b) => a.date.localeCompare(b.date));
     }
@@ -167,7 +167,6 @@ export class SheetsClient {
     return historyMap;
   }
 
-  // X更新履歴だけを取得（一日平均計算用）
   async getXHistory(): Promise<Map<string, Array<{
     date: string;
     followers: number;
@@ -193,7 +192,6 @@ export class SheetsClient {
       const name = row.get('name') || '';
       const xUpdated = row.get('x_updated') || '';
       
-      // x_updatedがある行だけ取得
       if (!name || !xUpdated) continue;
 
       const date = row.get('date') || '';
@@ -212,7 +210,6 @@ export class SheetsClient {
       });
     }
 
-    // 日付順にソート
     for (const [name, history] of xHistoryMap) {
       history.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
     }
@@ -240,10 +237,10 @@ export class SheetsClient {
       name: m.name,
       supporters: m.financie.supporters,
       weekly_posts: m.financie.weeklyPosts,
-      last_post: m.financie.lastPostTime || '',
+      last_post: m.financie.lastPostTime ? m.financie.lastPostTime.split('T')[0] : '',
       x_followers: m.x.followers,
       x_posts: m.x.totalPosts,
-      x_updated: m.x.updatedAt || '',
+      x_updated: m.x.updatedAt ? m.x.updatedAt.split('T')[0] : '',
     }));
 
     await sheet.addRows(rows);
@@ -272,9 +269,7 @@ export class SheetsClient {
       '順位': i + 1,
       '名前': m.name,
       'サポーター数': m.financie.supporters,
-      '最終投稿': m.financie.lastPostTime 
-        ? m.financie.lastPostTime.split('T')[0]
-        : '',
+      '最終投稿': m.financie.lastPostTime ? m.financie.lastPostTime.split('T')[0] : '',
       '週間投稿': m.financie.weeklyPosts,
       'Xフォロワー': m.x.followers,
       'X投稿数': m.x.totalPosts,
