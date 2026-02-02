@@ -1,3 +1,5 @@
+// src/scrapers/X.ts
+
 import axios from 'axios';
 import { XMetrics } from '../types';
 import { logger } from '../utils/logger';
@@ -14,7 +16,9 @@ export async function fetchXMetricsBatch(
 
   // @を除去してカンマ区切りにする
   const cleanUsernames = usernames.map(u => u.replace(/[@＠]/g, '').trim()).join(',');
-  const url = `https://api.twitter.com/2/users/by?usernames=${encodeURIComponent(cleanUsernames)}&user.fields=public_metrics`;
+  
+  // encodeURIComponentを削除（カンマがエンコードされて400エラーになるため）
+  const url = `https://api.twitter.com/2/users/by?usernames=${cleanUsernames}&user.fields=public_metrics`;
 
   try {
     const response = await axios.get(url, {
