@@ -2,11 +2,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { launchBrowser, createContext, closeBrowser } from './utils/browser';
 import { scrapeFinancie } from './scrapers/financie';
+import { fetchXMetricsBatch } from './scrapers/X'; // ★追加
 import { SheetsClient } from './sheets/client';
 import { randomDelay } from './utils/delay';
 import { logger } from './utils/logger';
 import { DailyMetrics, ScoredMetrics, FinancieMetrics, XMetrics, Owner, XDailyAverage } from './types';
 
+/**
+ * スコア計算ロジック
+ */
 const calculateScore = (
   current: DailyMetrics,
   yesterday: DailyMetrics | undefined
@@ -29,12 +33,13 @@ const calculateScore = (
   };
 };
 
-// X一日平均を計算
+/**
+ * X一日平均を計算
+ */
 const calculateXDailyAverage = (
   xHistory: Array<{ date: string; followers: number; posts: number; updatedAt: string }>
 ): XDailyAverage | null => {
   if (xHistory.length < 2) {
-    // データが2件未満なら計算不可
     if (xHistory.length === 1) {
       return {
         avgFollowersPerDay: 0,
@@ -66,8 +71,11 @@ const calculateXDailyAverage = (
   };
 };
 
+/**
+ * メイン処理
+ */
 async function main(): Promise<void> {
-  logger.info('=== FiNANCiE Owner Ranking System Started ===');
+  logger.info('=== FiNANCiE & X Owner Ranking System Started ===');
   
   const sheets = new SheetsClient();
   let browser = null;
@@ -79,6 +87,11 @@ async function main(): Promise<void> {
     }
     logger.info(`Found ${owners.length} owners to process`);
 
+    // ★ 1. Xのデータを一括で取得 (ここで1回だけ $0.005 消費)
+    const xIds = owners.map(o => o.xId).filter((id): id is string => !!id);
+    // GitHub Secretに登録した X_BEARER_TOKEN を使用
+    const xMetricsMap = await fetchXMetricsBatch(xIds, process.env.X_BEARER_TOKEN || '');
+
     const yesterdayMetrics = await sheets.getYesterdayMetrics();
     logger.info(`Yesterday metrics loaded for ${yesterdayMetrics.size} owners`);
 
@@ -88,6 +101,7 @@ async function main(): Promise<void> {
     const todayDate = sheets.getTodayDate();
     const todayMetrics: DailyMetrics[] = [];
 
+    // 2. FiNANCiEのスクレイピングループ
     for (let i = 0; i < owners.length; i++) {
       const owner = owners[i];
       logger.info(`\n[${i + 1}/${owners.length}] Processing: ${owner.name}`);
@@ -102,10 +116,8 @@ async function main(): Promise<void> {
       
       if (owner.financieUrl) {
         const page = await context.newPage();
-        
         try {
           const result = await scrapeFinancie(page, owner.financieUrl);
-          
           if (result.success && result.data) {
             financieData = {
               supporters: result.data.supporters > 0 
@@ -123,15 +135,15 @@ async function main(): Promise<void> {
         }
       }
 
-      // Xデータは前日から継承（手動入力はスプシで行う）
-      let xData: XMetrics = { followers: 0, totalPosts: 0, updatedAt: null };
-      if (yesterday && yesterday.x) {
-        xData = {
-          followers: yesterday.x.followers,
-          totalPosts: yesterday.x.totalPosts,
-          updatedAt: yesterday.x.updatedAt || null,
-        };
-      }
+      // ★ 3. 取得済みのXデータをマップから取り出す (APIは叩かないので追加コスト0)
+      const xKey = owner.xId?.replace(/[@＠]/g, '').toLowerCase() || '';
+      const xDataFromApi = xMetricsMap.get(xKey);
+
+      let xData: XMetrics = { 
+        followers: xDataFromApi?.followers || yesterday?.x.followers || 0, 
+        totalPosts: xDataFromApi?.totalPosts || yesterday?.x.totalPosts || 0, 
+        updatedAt: xDataFromApi?.updatedAt || yesterday?.x.updatedAt || todayDate 
+      };
 
       todayMetrics.push({
         date: todayDate,
@@ -140,7 +152,7 @@ async function main(): Promise<void> {
         x: xData,
       });
 
-      logger.info(`  Result: supporters=${financieData.supporters}, weeklyPosts=${financieData.weeklyPosts}, lastPost=${financieData.lastPostTime}`);
+      logger.info(`  Result: supporters=${financieData.supporters}, xFollowers=${xData.followers}`);
 
       await randomDelay(3, 6);
     }
@@ -153,16 +165,13 @@ async function main(): Promise<void> {
       calculateScore(m, yesterdayMetrics.get(m.name))
     );
 
+    // 4. スプレッドシートと履歴の更新
     await sheets.appendHistory(todayMetrics);
     await sheets.updateRanking(scoredMetrics);
 
-    // 全履歴を取得
     const allHistory = await sheets.getAllHistory();
-    
-    // X履歴を取得
     const xHistory = await sheets.getXHistory();
 
-    // サポーター数でソート
     const sorted = [...scoredMetrics].sort((a, b) => b.financie.supporters - a.financie.supporters);
 
     // 履歴データを整形
@@ -180,7 +189,7 @@ async function main(): Promise<void> {
       }
     }
 
-    // JSON出力
+    // 5. JSON出力 (GitHub上のWebサイト用)
     const rankingData = {
       updated: new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }),
       ranking: sorted.map(m => {
@@ -195,10 +204,8 @@ async function main(): Promise<void> {
             : null,
           financieUrl: owner?.financieUrl || null,
           xId: owner?.xId || null,
-          // Xデータ
           xFollowers: xAvg?.latestFollowers || m.x.followers || 0,
           xPosts: xAvg?.latestPosts || m.x.totalPosts || 0,
-          // 一日平均
           xAvgFollowersPerDay: xAvg?.avgFollowersPerDay || 0,
           xAvgPostsPerDay: xAvg?.avgPostsPerDay || 0,
           xTotalDays: xAvg?.totalDays || 0,
@@ -217,12 +224,6 @@ async function main(): Promise<void> {
       JSON.stringify(rankingData, null, 2)
     );
     logger.info('Exported ranking.json for GitHub Pages');
-
-    logger.info('\n=== Results Summary ===');
-    sorted.slice(0, 10).forEach((m, i) => {
-      const xAvg = xAverages[m.name];
-      logger.info(`${i + 1}. ${m.name}: ${m.financie.supporters} supporters (weekly=${m.financie.weeklyPosts})${xAvg ? `, X: +${xAvg.avgFollowersPerDay}/day` : ''}`);
-    });
 
     logger.info('\n=== Process Completed ===');
     
