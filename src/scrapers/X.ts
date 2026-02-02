@@ -14,14 +14,21 @@ export async function fetchXMetricsBatch(
   const metricsMap = new Map<string, XMetrics>();
   if (usernames.length === 0) return metricsMap;
 
-  // @を除去してカンマ区切りにする
-  const cleanUsernames = usernames.map(u => u.replace(/[@＠]/g, '').trim()).join(',');
-  
+  // @を除去し、空文字を除去してカンマ区切りにする
+  const cleanUsernames = usernames
+    .map(u => u.replace(/[@＠]/g, '').trim())
+    .filter(u => u.length > 0)
+    .join(',');
+
+  if (cleanUsernames.length === 0) {
+    logger.warn('[X] 有効なユーザー名がありません');
+    return metricsMap;
+  }
+
   const url = `https://api.twitter.com/2/users/by?usernames=${cleanUsernames}&user.fields=public_metrics`;
 
-  // デバッグ用ログ
   logger.info(`[X] リクエストURL: ${url}`);
-  logger.info(`[X] ユーザー数: ${usernames.length}, Bearer Token存在: ${!!bearerToken}, Token長: ${bearerToken?.length || 0}`);
+  logger.info(`[X] ユーザー数: ${cleanUsernames.split(',').length}, Bearer Token存在: ${!!bearerToken}`);
 
   try {
     const response = await axios.get(url, {
