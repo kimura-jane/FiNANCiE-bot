@@ -1,8 +1,10 @@
+// src/index.ts
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { launchBrowser, createContext, closeBrowser } from './utils/browser';
 import { scrapeFinancie } from './scrapers/financie';
-import { fetchXMetricsBatch } from './scrapers/X'; // ★追加
+import { fetchXMetricsBatch } from './scrapers/X';
 import { SheetsClient } from './sheets/client';
 import { randomDelay } from './utils/delay';
 import { logger } from './utils/logger';
@@ -87,9 +89,8 @@ async function main(): Promise<void> {
     }
     logger.info(`Found ${owners.length} owners to process`);
 
-    // ★ 1. Xのデータを一括で取得 (ここで1回だけ $0.005 消費)
+    // 1. Xのデータを一括で取得
     const xIds = owners.map(o => o.xId).filter((id): id is string => !!id);
-    // GitHub Secretに登録した X_BEARER_TOKEN を使用
     const xMetricsMap = await fetchXMetricsBatch(xIds, process.env.X_BEARER_TOKEN || '');
 
     const yesterdayMetrics = await sheets.getYesterdayMetrics();
@@ -135,7 +136,7 @@ async function main(): Promise<void> {
         }
       }
 
-      // ★ 3. 取得済みのXデータをマップから取り出す (APIは叩かないので追加コスト0)
+      // 3. 取得済みのXデータをマップから取り出す
       const xKey = owner.xId?.replace(/[@＠]/g, '').toLowerCase() || '';
       const xDataFromApi = xMetricsMap.get(xKey);
 
@@ -204,8 +205,8 @@ async function main(): Promise<void> {
             : null,
           financieUrl: owner?.financieUrl || null,
           xId: owner?.xId || null,
-          xFollowers: xAvg?.latestFollowers || m.x.followers || 0,
-          xPosts: xAvg?.latestPosts || m.x.totalPosts || 0,
+          xFollowers: m.x.followers,
+          xPosts: m.x.totalPosts,
           xAvgFollowersPerDay: xAvg?.avgFollowersPerDay || 0,
           xAvgPostsPerDay: xAvg?.avgPostsPerDay || 0,
           xTotalDays: xAvg?.totalDays || 0,
