@@ -2,8 +2,10 @@ name: FiNANCiE Owner Ranking Daily Update
 
 on:
   schedule:
+    # 毎日日本時間の深夜0時（UTC 15:00）に自動実行
     - cron: '0 15 * * *'
   
+  # GitHubの画面からいつでも手動で実行できるようにする
   workflow_dispatch:
 
 jobs:
@@ -12,29 +14,38 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      # 1. リポジトリのコードを取得
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Node.js環境をセットアップ（バージョン20を使用）
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
+      # 3. 必要なライブラリ（axiosやplaywrightなど）をインストール
       - name: Install dependencies
         run: npm install
 
+      # 4. ブラウザ（Chromium）のインストール
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
+      # 5. TypeScriptをJavaScriptに変換（ビルド）
       - name: Build TypeScript
         run: npm run build
 
+      # 6. スクレイパー実行（ここでスプシ更新とJSON作成を行う）
       - name: Run scraper
         env:
+          # GitHub Secretsから合鍵を取り出してプログラムに渡す
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
         run: npm start
 
+      # 7. 更新された docs/ フォルダ内のデータをGitHubに保存する
       - name: Commit and push ranking data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -43,6 +54,7 @@ jobs:
           git diff --staged --quiet || git commit -m "Update ranking data [skip ci]"
           git push
 
+      # 8. もし失敗した場合はログを保存する
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
