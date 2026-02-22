@@ -36,27 +36,34 @@ const calculateScore = (
 };
 
 /**
- * X一日平均を計算
+ * X一日平均を計算（2/4基準）
  */
 const calculateXDailyAverage = (
   xHistory: Array<{ date: string; followers: number; posts: number; updatedAt: string }>
 ): XDailyAverage | null => {
-  if (xHistory.length < 2) {
-    if (xHistory.length === 1) {
+  // 2/4以降のデータだけに絞る
+  const BASE_DATE = '2026-02-04';
+  const validHistory = xHistory.filter(h => {
+    const date = h.date || h.updatedAt.split('T')[0];
+    return date >= BASE_DATE && (h.posts > 0 || h.followers > 0);
+  });
+
+  if (validHistory.length < 2) {
+    if (validHistory.length === 1) {
       return {
         avgFollowersPerDay: 0,
         avgPostsPerDay: 0,
         totalDays: 0,
-        latestFollowers: xHistory[0].followers,
-        latestPosts: xHistory[0].posts,
+        latestFollowers: validHistory[0].followers,
+        latestPosts: validHistory[0].posts,
       };
     }
     return null;
   }
 
-  const first = xHistory[0];
-  const last = xHistory[xHistory.length - 1];
-  
+  const first = validHistory[0];
+  const last = validHistory[validHistory.length - 1];
+
   const firstDate = new Date(first.updatedAt);
   const lastDate = new Date(last.updatedAt);
   const daysDiff = Math.max(1, Math.floor((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)));
