@@ -1,44 +1,44 @@
 {
-  "updated": "2026/3/1 0:23:40",
+  "updated": "2026/3/2 0:24:11",
   "ranking": [
     {
       "name": "篠塚康介@ベーシックインカムプロジェクト",
-      "supporters": 864,
+      "supporters": 865,
       "weeklyPosts": 0,
       "lastPost": "2026-02-21",
       "financieUrl": "https://financie.jp/users/sinosukedesu",
       "xId": "@sinosukedesu",
-      "xFollowers": 15653,
-      "xPosts": 17650,
-      "xAvgFollowersPerDay": -0.78,
-      "xAvgPostsPerDay": -3.74,
-      "xTotalDays": 23
+      "xFollowers": 15656,
+      "xPosts": 17648,
+      "xAvgFollowersPerDay": -0.58,
+      "xAvgPostsPerDay": -3.38,
+      "xTotalDays": 26
     },
     {
       "name": "お米トークン",
-      "supporters": 760,
+      "supporters": 761,
       "weeklyPosts": 6,
-      "lastPost": "2026-02-27",
+      "lastPost": "2026-03-01",
       "financieUrl": "https://financie.jp/users/okometoken",
       "xId": "@katsuramukiokan",
-      "xFollowers": 1478,
-      "xPosts": 2228,
-      "xAvgFollowersPerDay": 2.61,
+      "xFollowers": 1490,
+      "xPosts": 2246,
+      "xAvgFollowersPerDay": 2.77,
       "xAvgPostsPerDay": 6,
-      "xTotalDays": 23
+      "xTotalDays": 26
     },
     {
       "name": "Nest",
       "supporters": 728,
-      "weeklyPosts": 8,
+      "weeklyPosts": 7,
       "lastPost": "2026-02-28",
       "financieUrl": "https://financie.jp/users/purchaseunit_tracking-nest_advance_a",
       "xId": "@cat_man0311",
-      "xFollowers": 1145,
-      "xPosts": 6700,
-      "xAvgFollowersPerDay": 2.17,
-      "xAvgPostsPerDay": 17.39,
-      "xTotalDays": 23
+      "xFollowers": 1146,
+      "xPosts": 6723,
+      "xAvgFollowersPerDay": 1.96,
+      "xAvgPostsPerDay": 16.27,
+      "xTotalDays": 26
     },
     {
       "name": "Web3キッチンカープロジェクト",
@@ -48,10 +48,10 @@
       "financieUrl": "https://financie.jp/users/cryptoninjakitchencar",
       "xId": "@ryos50161232",
       "xFollowers": 2099,
-      "xPosts": 10840,
-      "xAvgFollowersPerDay": -0.35,
-      "xAvgPostsPerDay": 6.65,
-      "xTotalDays": 23
+      "xPosts": 10873,
+      "xAvgFollowersPerDay": -0.31,
+      "xAvgPostsPerDay": 7.15,
+      "xTotalDays": 26
     },
     {
       "name": "サトルトークン",
@@ -60,37 +60,24 @@
       "lastPost": "2026-02-19",
       "financieUrl": "https://financie.jp/users/cryptoninjachildren_meme_satoru",
       "xId": "@ninjachildren",
-      "xFollowers": 1332,
-      "xPosts": 1864,
-      "xAvgFollowersPerDay": -0.04,
-      "xAvgPostsPerDay": 4.57,
-      "xTotalDays": 23
+      "xFollowers": 1333,
+      "xPosts": 1872,
+      "xAvgFollowersPerDay": 0,
+      "xAvgPostsPerDay": 4.35,
+      "xTotalDays": 26
     },
     {
       "name": "essan",
-      "supporters": 263,
+      "supporters": 261,
       "weeklyPosts": 0,
       "lastPost": "2026-01-30",
       "financieUrl": "https://financie.jp/users/essan",
       "xId": "@essan_",
-      "xFollowers": 17747,
-      "xPosts": 282940,
-      "xAvgFollowersPerDay": -23.09,
-      "xAvgPostsPerDay": 126.57,
-      "xTotalDays": 23
-    },
-    {
-      "name": "ハヤシモン",
-      "supporters": 192,
-      "weeklyPosts": 2,
-      "lastPost": "2026-02-26",
-      "financieUrl": "https://financie.jp/users/hayashimon",
-      "xId": "@hayashimon1",
-      "xFollowers": 3303,
-      "xPosts": 16287,
-      "xAvgFollowersPerDay": 1.09,
-      "xAvgPostsPerDay": 9.96,
-      "xTotalDays": 23
+      "xFollowers": 17687,
+      "xPosts": 283349,
+      "xAvgFollowersPerDay": -22.73,
+      "xAvgPostsPerDay": 127.69,
+      "xTotalDays": 26
     },
     {
       "name": "お好み焼きB",
@@ -100,23 +87,36 @@
       "financieUrl": "https://financie.jp/users/okonomiyakib",
       "xId": "@raifu_0405",
       "xFollowers": 1228,
-      "xPosts": 9151,
+      "xPosts": 9155,
       "xAvgFollowersPerDay": 0.04,
-      "xAvgPostsPerDay": 5.57,
-      "xTotalDays": 23
+      "xAvgPostsPerDay": 5.08,
+      "xTotalDays": 26
+    },
+    {
+      "name": "ハヤシモン",
+      "supporters": 191,
+      "weeklyPosts": 1,
+      "lastPost": "2026-02-26",
+      "financieUrl": "https://financie.jp/users/hayashimon",
+      "xId": "@hayashimon1",
+      "xFollowers": 3302,
+      "xPosts": 16327,
+      "xAvgFollowersPerDay": 0.92,
+      "xAvgPostsPerDay": 10.35,
+      "xTotalDays": 26
     },
     {
       "name": "あけじまD",
-      "supporters": 183,
+      "supporters": 184,
       "weeklyPosts": 1,
       "lastPost": "2026-02-27",
       "financieUrl": "https://financie.jp/users/akezima_d",
       "xId": "@akezima_d",
-      "xFollowers": 6386,
-      "xPosts": 23718,
-      "xAvgFollowersPerDay": 2.87,
-      "xAvgPostsPerDay": 9.61,
-      "xTotalDays": 23
+      "xFollowers": 6393,
+      "xPosts": 23773,
+      "xAvgFollowersPerDay": 2.81,
+      "xAvgPostsPerDay": 10.62,
+      "xTotalDays": 26
     },
     {
       "name": "音夢パンダ",
@@ -126,10 +126,10 @@
       "financieUrl": "https://financie.jp/users/Otoyume_Panda",
       "xId": "@nem_panda_h",
       "xFollowers": 765,
-      "xPosts": 14231,
-      "xAvgFollowersPerDay": 0.26,
-      "xAvgPostsPerDay": 14.52,
-      "xTotalDays": 23
+      "xPosts": 14281,
+      "xAvgFollowersPerDay": 0.23,
+      "xAvgPostsPerDay": 14.77,
+      "xTotalDays": 26
     },
     {
       "name": "ジョイントーレ先生",
@@ -138,11 +138,11 @@
       "lastPost": "2026-01-25",
       "financieUrl": "https://financie.jp/users/jointre",
       "xId": "@jointre_sensei",
-      "xFollowers": 196,
+      "xFollowers": 193,
       "xPosts": 484,
-      "xAvgFollowersPerDay": 0.09,
-      "xAvgPostsPerDay": 0.26,
-      "xTotalDays": 23
+      "xAvgFollowersPerDay": -0.04,
+      "xAvgPostsPerDay": 0.23,
+      "xTotalDays": 26
     },
     {
       "name": "映画制作/大河内奏至",
@@ -153,9 +153,9 @@
       "xId": "@soushi1029",
       "xFollowers": 343,
       "xPosts": 82,
-      "xAvgFollowersPerDay": -0.13,
+      "xAvgFollowersPerDay": -0.12,
       "xAvgPostsPerDay": 0.04,
-      "xTotalDays": 23
+      "xTotalDays": 26
     },
     {
       "name": "春日部、本庄、深谷、北本ダンススクール",
@@ -164,24 +164,24 @@
       "lastPost": "2026-02-27",
       "financieUrl": "https://financie.jp/users/danceschool2525",
       "xId": "@danceschool2525",
-      "xFollowers": 39,
+      "xFollowers": 40,
       "xPosts": 64,
-      "xAvgFollowersPerDay": 0.09,
-      "xAvgPostsPerDay": 0.17,
-      "xTotalDays": 23
+      "xAvgFollowersPerDay": 0.12,
+      "xAvgPostsPerDay": 0.15,
+      "xTotalDays": 26
     },
     {
       "name": "CROW Maker",
-      "supporters": 99,
+      "supporters": 98,
       "weeklyPosts": 0,
       "lastPost": null,
       "financieUrl": "https://financie.jp/users/o2a5aa51a3d1d4b03acace461e648897b",
       "xId": "@CrowMakerjp",
-      "xFollowers": 437,
-      "xPosts": 739,
+      "xFollowers": 434,
+      "xPosts": 740,
       "xAvgFollowersPerDay": -1.04,
-      "xAvgPostsPerDay": 0.04,
-      "xTotalDays": 23
+      "xAvgPostsPerDay": 0.08,
+      "xTotalDays": 26
     },
     {
       "name": "Ryo",
@@ -190,24 +190,24 @@
       "lastPost": "2025-12-06",
       "financieUrl": "https://financie.jp/users/ryok7312",
       "xId": "@ry_ka_ke_mo2010",
-      "xFollowers": 2323,
+      "xFollowers": 2324,
       "xPosts": 7616,
-      "xAvgFollowersPerDay": -0.52,
-      "xAvgPostsPerDay": 0.43,
-      "xTotalDays": 23
+      "xAvgFollowersPerDay": -0.42,
+      "xAvgPostsPerDay": 0.38,
+      "xTotalDays": 26
     },
     {
       "name": "ぬりえ",
-      "supporters": 52,
+      "supporters": 53,
       "weeklyPosts": 0,
       "lastPost": "2025-11-29",
       "financieUrl": "https://financie.jp/users/kazumaono",
       "xId": "@kazumaono_",
-      "xFollowers": 2723,
-      "xPosts": 25839,
-      "xAvgFollowersPerDay": -0.09,
-      "xAvgPostsPerDay": 1,
-      "xTotalDays": 23
+      "xFollowers": 2726,
+      "xPosts": 25837,
+      "xAvgFollowersPerDay": 0.04,
+      "xAvgPostsPerDay": 0.81,
+      "xTotalDays": 26
     },
     {
       "name": "夢結び工房",
@@ -218,26 +218,26 @@
       "xId": "@yumemusubi_kobo",
       "xFollowers": 21,
       "xPosts": 37,
-      "xAvgFollowersPerDay": -0.13,
+      "xAvgFollowersPerDay": -0.12,
       "xAvgPostsPerDay": 0,
-      "xTotalDays": 23
+      "xTotalDays": 26
     },
     {
       "name": "BeAR DAO",
-      "supporters": 45,
+      "supporters": 46,
       "weeklyPosts": 0,
       "lastPost": "2026-01-06",
       "financieUrl": "https://financie.jp/users/BeAR_DAO_esports",
       "xId": "@bear_metalab_es",
-      "xFollowers": 736,
+      "xFollowers": 735,
       "xPosts": 1270,
-      "xAvgFollowersPerDay": -0.09,
-      "xAvgPostsPerDay": 0.09,
-      "xTotalDays": 23
+      "xAvgFollowersPerDay": -0.12,
+      "xAvgPostsPerDay": 0.08,
+      "xTotalDays": 26
     },
     {
       "name": "ぽぽたん音楽隊",
-      "supporters": 43,
+      "supporters": 42,
       "weeklyPosts": 0,
       "lastPost": "2026-01-15",
       "financieUrl": "https://financie.jp/users/vf4791babdd334d609a0758c66944ba3f",
@@ -255,11 +255,11 @@
       "lastPost": "2026-01-24",
       "financieUrl": "https://financie.jp/users/gb7e0b11574424b818718585bd5c845e8",
       "xId": "@1000morikasu",
-      "xFollowers": 135,
-      "xPosts": 4354,
-      "xAvgFollowersPerDay": -0.13,
-      "xAvgPostsPerDay": 2.35,
-      "xTotalDays": 23
+      "xFollowers": 136,
+      "xPosts": 4359,
+      "xAvgFollowersPerDay": -0.08,
+      "xAvgPostsPerDay": 2.27,
+      "xTotalDays": 26
     },
     {
       "name": "TRONファンクラブ",
@@ -268,11 +268,11 @@
       "lastPost": "2026-02-10",
       "financieUrl": "https://financie.jp/users/Bass_Sun_TRON",
       "xId": "@bass_sun_trx",
-      "xFollowers": 1079,
-      "xPosts": 9456,
-      "xAvgFollowersPerDay": 0.35,
-      "xAvgPostsPerDay": 6.43,
-      "xTotalDays": 23
+      "xFollowers": 1081,
+      "xPosts": 9476,
+      "xAvgFollowersPerDay": 0.38,
+      "xAvgPostsPerDay": 6.46,
+      "xTotalDays": 26
     },
     {
       "name": "DREAMTIME",
@@ -285,7 +285,7 @@
       "xPosts": 8,
       "xAvgFollowersPerDay": 0,
       "xAvgPostsPerDay": 0,
-      "xTotalDays": 23
+      "xTotalDays": 26
     },
     {
       "name": "HIP HUB",
@@ -294,11 +294,11 @@
       "lastPost": null,
       "financieUrl": "https://financie.jp/users/vd006c54474714347b931976e9f0d4f44",
       "xId": "@tupper_hiphub",
-      "xFollowers": 340,
-      "xPosts": 428,
-      "xAvgFollowersPerDay": 8.61,
-      "xAvgPostsPerDay": 1.78,
-      "xTotalDays": 23
+      "xFollowers": 359,
+      "xPosts": 459,
+      "xAvgFollowersPerDay": 8.35,
+      "xAvgPostsPerDay": 2.77,
+      "xTotalDays": 26
     },
     {
       "name": "おきおぢ",
@@ -307,11 +307,11 @@
       "lastPost": null,
       "financieUrl": "https://financie.jp/users/zdff64f470f244eab90d3a8dec5032ac8",
       "xId": "@okiojii",
-      "xFollowers": 4175,
-      "xPosts": 8933,
-      "xAvgFollowersPerDay": 0.43,
-      "xAvgPostsPerDay": 13.26,
-      "xTotalDays": 23
+      "xFollowers": 4167,
+      "xPosts": 8938,
+      "xAvgFollowersPerDay": 0.08,
+      "xAvgPostsPerDay": 11.92,
+      "xTotalDays": 26
     },
     {
       "name": "ART WITH ME",
@@ -346,11 +346,11 @@
       "lastPost": null,
       "financieUrl": "https://financie.jp/users/j35bb72aa7e1b4498be768d666f238753",
       "xId": "@emi_primary",
-      "xFollowers": 1898,
-      "xPosts": 8990,
-      "xAvgFollowersPerDay": 1.13,
-      "xAvgPostsPerDay": 9.35,
-      "xTotalDays": 23
+      "xFollowers": 1893,
+      "xPosts": 9002,
+      "xAvgFollowersPerDay": 0.81,
+      "xAvgPostsPerDay": 8.73,
+      "xTotalDays": 26
     }
   ],
   "history": {
@@ -542,6 +542,10 @@
       {
         "date": "2026-03-01",
         "supporters": 30
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 30
       }
     ],
     "TRONファンクラブ": [
@@ -731,6 +735,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 38
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 38
       }
     ],
@@ -922,6 +930,10 @@
       {
         "date": "2026-03-01",
         "supporters": 43
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 42
       }
     ],
     "HIP HUB": [
@@ -1111,6 +1123,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 25
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 25
       }
     ],
@@ -1302,6 +1318,10 @@
       {
         "date": "2026-03-01",
         "supporters": 192
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 191
       }
     ],
     "Ryo": [
@@ -1491,6 +1511,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 66
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 66
       }
     ],
@@ -1682,6 +1706,10 @@
       {
         "date": "2026-03-01",
         "supporters": 263
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 261
       }
     ],
     "CROW Maker": [
@@ -1872,6 +1900,10 @@
       {
         "date": "2026-03-01",
         "supporters": 99
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 98
       }
     ],
     "The collective": [
@@ -2061,6 +2093,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 39
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 39
       }
     ],
@@ -2252,6 +2288,10 @@
       {
         "date": "2026-03-01",
         "supporters": 115
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 115
       }
     ],
     "映画制作/大河内奏至": [
@@ -2441,6 +2481,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 109
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 109
       }
     ],
@@ -2632,6 +2676,10 @@
       {
         "date": "2026-03-01",
         "supporters": 192
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 192
       }
     ],
     "夢結び工房": [
@@ -2821,6 +2869,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 51
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 51
       }
     ],
@@ -3012,6 +3064,10 @@
       {
         "date": "2026-03-01",
         "supporters": 183
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 184
       }
     ],
     "ぬりえ": [
@@ -3202,6 +3258,10 @@
       {
         "date": "2026-03-01",
         "supporters": 52
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 53
       }
     ],
     "音夢パンダ": [
@@ -3391,6 +3451,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 166
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 166
       }
     ],
@@ -3582,6 +3646,10 @@
       {
         "date": "2026-03-01",
         "supporters": 45
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 46
       }
     ],
     "お米トークン": [
@@ -3772,6 +3840,10 @@
       {
         "date": "2026-03-01",
         "supporters": 760
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 761
       }
     ],
     "エミねぇ": [
@@ -3961,6 +4033,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 8
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 8
       }
     ],
@@ -4152,6 +4228,10 @@
       {
         "date": "2026-03-01",
         "supporters": 24
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 24
       }
     ],
     "Nest": [
@@ -4341,6 +4421,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 728
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 728
       }
     ],
@@ -4532,6 +4616,10 @@
       {
         "date": "2026-03-01",
         "supporters": 106
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 106
       }
     ],
     "Web3キッチンカープロジェクト": [
@@ -4721,6 +4809,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 696
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 696
       }
     ],
@@ -4912,6 +5004,10 @@
       {
         "date": "2026-03-01",
         "supporters": 340
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 340
       }
     ],
     "篠塚康介@ベーシックインカムプロジェクト": [
@@ -5102,6 +5198,10 @@
       {
         "date": "2026-03-01",
         "supporters": 864
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 865
       }
     ],
     "ART WITH ME": [
@@ -5276,6 +5376,10 @@
       {
         "date": "2026-03-01",
         "supporters": 18
+      },
+      {
+        "date": "2026-03-02",
+        "supporters": 18
       }
     ],
     "SEKITOBA": [
@@ -5449,6 +5553,10 @@
       },
       {
         "date": "2026-03-01",
+        "supporters": 17
+      },
+      {
+        "date": "2026-03-02",
         "supporters": 17
       }
     ]
@@ -5646,6 +5754,12 @@
         "followers": 7,
         "posts": 8,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 7,
+        "posts": 8,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -5860,6 +5974,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 1081,
+        "posts": 9476,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 1073,
         "posts": 9272,
@@ -5983,6 +6103,12 @@
       },
       {
         "date": "2026-02-28",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-02-02"
+      },
+      {
+        "date": "2026-03-02",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-02-02"
@@ -6296,6 +6422,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 359,
+        "posts": 459,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 142,
         "posts": 372,
@@ -6512,6 +6644,12 @@
         "followers": 3303,
         "posts": 16287,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 3302,
+        "posts": 16327,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -6732,6 +6870,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 2324,
+        "posts": 7616,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 2334,
         "posts": 7604,
@@ -6948,6 +7092,12 @@
         "followers": 17747,
         "posts": 282940,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 17687,
+        "posts": 283349,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -7168,6 +7318,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 434,
+        "posts": 740,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 473,
         "posts": 738,
@@ -7384,6 +7540,12 @@
         "followers": 135,
         "posts": 4354,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 136,
+        "posts": 4359,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -7604,6 +7766,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 193,
+        "posts": 484,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 193,
         "posts": 472,
@@ -7820,6 +7988,12 @@
         "followers": 343,
         "posts": 82,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 343,
+        "posts": 82,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -8040,6 +8214,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 1228,
+        "posts": 9155,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 1229,
         "posts": 8995,
@@ -8256,6 +8436,12 @@
         "followers": 21,
         "posts": 37,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 21,
+        "posts": 37,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -8476,6 +8662,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 6393,
+        "posts": 23773,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 6306,
         "posts": 23408,
@@ -8692,6 +8884,12 @@
         "followers": 2723,
         "posts": 25839,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 2726,
+        "posts": 25837,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -8912,6 +9110,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 765,
+        "posts": 14281,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 759,
         "posts": 13846,
@@ -9128,6 +9332,12 @@
         "followers": 736,
         "posts": 1270,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 735,
+        "posts": 1270,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -9348,6 +9558,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 1490,
+        "posts": 2246,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 1406,
         "posts": 2054,
@@ -9564,6 +9780,12 @@
         "followers": 1898,
         "posts": 8990,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 1893,
+        "posts": 9002,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -9784,6 +10006,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 4167,
+        "posts": 8938,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 4164,
         "posts": 8576,
@@ -10000,6 +10228,12 @@
         "followers": 1145,
         "posts": 6700,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 1146,
+        "posts": 6723,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -10220,6 +10454,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 40,
+        "posts": 64,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 37,
         "posts": 58,
@@ -10436,6 +10676,12 @@
         "followers": 2099,
         "posts": 10840,
         "updatedAt": "2026-02-26"
+      },
+      {
+        "date": "2026-03-02",
+        "followers": 2099,
+        "posts": 10873,
+        "updatedAt": "2026-03-01"
       },
       {
         "date": "2026-01-29",
@@ -10656,6 +10902,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 1333,
+        "posts": 1872,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 1332,
         "posts": 1734,
@@ -10874,6 +11126,12 @@
         "updatedAt": "2026-02-26"
       },
       {
+        "date": "2026-03-02",
+        "followers": 15656,
+        "posts": 17648,
+        "updatedAt": "2026-03-01"
+      },
+      {
         "date": "2026-01-29",
         "followers": 15676,
         "posts": 0,
@@ -10997,6 +11255,12 @@
       },
       {
         "date": "2026-02-28",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-02-02"
+      },
+      {
+        "date": "2026-03-02",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-02-02"
@@ -11203,6 +11467,12 @@
       },
       {
         "date": "2026-02-28",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-02-02"
+      },
+      {
+        "date": "2026-03-02",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-02-02"
