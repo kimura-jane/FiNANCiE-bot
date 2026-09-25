@@ -1,9 +1,9 @@
 {
-  "updated": "2026/9/25 3:53:15",
+  "updated": "2026/9/26 4:10:44",
   "ranking": [
     {
       "name": "篠塚康介@ベーシックインカムプロジェクト",
-      "supporters": 837,
+      "supporters": 838,
       "weeklyPosts": 0,
       "lastPost": "2026-06-15",
       "financieUrl": "https://financie.jp/users/sinosukedesu",
@@ -18,7 +18,7 @@
       "name": "お米トークン",
       "supporters": 742,
       "weeklyPosts": 3,
-      "lastPost": "2026-09-24",
+      "lastPost": "2026-09-25",
       "financieUrl": "https://financie.jp/users/okometoken",
       "xId": "@katsuramukiokan",
       "xFollowers": 0,
@@ -30,8 +30,8 @@
     {
       "name": "Nest",
       "supporters": 721,
-      "weeklyPosts": 2,
-      "lastPost": "2026-09-24",
+      "weeklyPosts": 3,
+      "lastPost": "2026-09-25",
       "financieUrl": "https://financie.jp/users/purchaseunit_tracking-nest_advance_a",
       "xId": "@cat_man0311",
       "xFollowers": 0,
@@ -42,7 +42,7 @@
     },
     {
       "name": "Web3キッチンカープロジェクト",
-      "supporters": 675,
+      "supporters": 676,
       "weeklyPosts": 0,
       "lastPost": "2026-06-14",
       "financieUrl": "https://financie.jp/users/cryptoninjakitchencar",
@@ -55,9 +55,9 @@
     },
     {
       "name": "サトルトークン",
-      "supporters": 323,
-      "weeklyPosts": 2,
-      "lastPost": "2026-09-22",
+      "supporters": 324,
+      "weeklyPosts": 3,
+      "lastPost": "2026-09-25",
       "financieUrl": "https://financie.jp/users/cryptoninjachildren_meme_satoru",
       "xId": "@ninjachildren",
       "xFollowers": 0,
@@ -107,7 +107,7 @@
     },
     {
       "name": "あけじまD",
-      "supporters": 183,
+      "supporters": 184,
       "weeklyPosts": 0,
       "lastPost": "2026-02-27",
       "financieUrl": "https://financie.jp/users/akezima_d",
@@ -147,8 +147,8 @@
     {
       "name": "春日部、本庄、深谷、北本ダンススクール",
       "supporters": 102,
-      "weeklyPosts": 1,
-      "lastPost": "2026-09-17",
+      "weeklyPosts": 3,
+      "lastPost": "2026-09-25",
       "financieUrl": "https://financie.jp/users/danceschool2525",
       "xId": "@danceschool2525",
       "xFollowers": 0,
@@ -1358,6 +1358,10 @@
       {
         "date": "2026-09-25",
         "supporters": 31
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 31
       }
     ],
     "TRONファンクラブ": [
@@ -2363,6 +2367,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 43
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 43
       }
     ],
@@ -3370,6 +3378,10 @@
       {
         "date": "2026-09-25",
         "supporters": 42
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 42
       }
     ],
     "HIP HUB": [
@@ -4375,6 +4387,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 26
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 26
       }
     ],
@@ -5382,6 +5398,10 @@
       {
         "date": "2026-09-25",
         "supporters": 189
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 189
       }
     ],
     "Ryo": [
@@ -6387,6 +6407,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 75
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 75
       }
     ],
@@ -7394,6 +7418,10 @@
       {
         "date": "2026-09-25",
         "supporters": 254
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 254
       }
     ],
     "CROW Maker": [
@@ -8399,6 +8427,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 96
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 96
       }
     ],
@@ -9406,6 +9438,10 @@
       {
         "date": "2026-09-25",
         "supporters": 39
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 39
       }
     ],
     "ジョイントーレ先生": [
@@ -10411,6 +10447,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 108
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 108
       }
     ],
@@ -11418,6 +11458,10 @@
       {
         "date": "2026-09-25",
         "supporters": 111
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 111
       }
     ],
     "お好み焼きB": [
@@ -12423,6 +12467,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 194
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 194
       }
     ],
@@ -13430,6 +13478,10 @@
       {
         "date": "2026-09-25",
         "supporters": 46
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 46
       }
     ],
     "あけじまD": [
@@ -14436,6 +14488,10 @@
       {
         "date": "2026-09-25",
         "supporters": 183
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 184
       }
     ],
     "ぬりえ": [
@@ -15441,6 +15497,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 52
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 52
       }
     ],
@@ -16448,6 +16508,10 @@
       {
         "date": "2026-09-25",
         "supporters": 0
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 0
       }
     ],
     "BeAR DAO": [
@@ -17453,6 +17517,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 44
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 44
       }
     ],
@@ -18460,6 +18528,10 @@
       {
         "date": "2026-09-25",
         "supporters": 742
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 742
       }
     ],
     "エミねぇ": [
@@ -19465,6 +19537,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 10
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 10
       }
     ],
@@ -20472,6 +20548,10 @@
       {
         "date": "2026-09-25",
         "supporters": 21
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 21
       }
     ],
     "Nest": [
@@ -21477,6 +21557,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 721
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 721
       }
     ],
@@ -22484,6 +22568,10 @@
       {
         "date": "2026-09-25",
         "supporters": 102
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 102
       }
     ],
     "Web3キッチンカープロジェクト": [
@@ -23490,6 +23578,10 @@
       {
         "date": "2026-09-25",
         "supporters": 675
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 676
       }
     ],
     "サトルトークン": [
@@ -24496,6 +24588,10 @@
       {
         "date": "2026-09-25",
         "supporters": 323
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 324
       }
     ],
     "篠塚康介@ベーシックインカムプロジェクト": [
@@ -25502,6 +25598,10 @@
       {
         "date": "2026-09-25",
         "supporters": 837
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 838
       }
     ],
     "ART WITH ME": [
@@ -26492,6 +26592,10 @@
       {
         "date": "2026-09-25",
         "supporters": 18
+      },
+      {
+        "date": "2026-09-26",
+        "supporters": 18
       }
     ],
     "SEKITOBA": [
@@ -27481,6 +27585,10 @@
       },
       {
         "date": "2026-09-25",
+        "supporters": 21
+      },
+      {
+        "date": "2026-09-26",
         "supporters": 21
       }
     ]
@@ -28857,6 +28965,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -30298,6 +30412,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -31729,6 +31849,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -33182,6 +33308,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -34619,6 +34751,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -36066,6 +36204,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -37503,6 +37647,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -38950,6 +39100,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -40387,6 +40543,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -41834,6 +41996,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -43271,6 +43439,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -44718,6 +44892,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -46155,6 +46335,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -47602,6 +47788,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -49039,6 +49231,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -50486,6 +50684,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -51923,6 +52127,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -53370,6 +53580,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -54807,6 +55023,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -56254,6 +56476,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -57691,6 +57919,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -59138,6 +59372,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -60575,6 +60815,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
@@ -62022,6 +62268,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -63464,6 +63716,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -64900,6 +65158,12 @@
         "updatedAt": "2026-09-06"
       },
       {
+        "date": "2026-09-26",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
         "date": "2026-09-13",
         "followers": 0,
         "posts": 0,
@@ -66325,6 +66589,12 @@
       },
       {
         "date": "2026-09-24",
+        "followers": 0,
+        "posts": 0,
+        "updatedAt": "2026-09-06"
+      },
+      {
+        "date": "2026-09-26",
         "followers": 0,
         "posts": 0,
         "updatedAt": "2026-09-06"
